@@ -18,7 +18,7 @@ export function Message({ role, content, isStreaming }: MessageProps) {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full min-w-0 overflow-hidden">
       {isStreaming && content === '' ? (
         <div className="flex h-6 items-center">
           <div className="h-2 w-2 animate-pulse rounded-full bg-primary" />
