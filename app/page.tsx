@@ -107,7 +107,11 @@ export default function Home() {
       </div>
 
       {/* Shared Prompt Input */}
-      <PromptInput onSend={handleSend} isAnyStreaming={streamingState} />
+      <PromptInput
+        onSend={handleSend}
+        isAnyStreaming={streamingState}
+        disabled={selectedModelIds.length === 0}
+      />
     </div>
   );
 }
