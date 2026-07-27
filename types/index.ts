@@ -7,8 +7,6 @@ export interface ModelConfig {
   provider: string;
   /** Gateway model string in "provider/model" format */
   gatewayId: string;
-  /** Accent color for the provider badge */
-  color: string;
 }
 
 export interface PanelMeta {
