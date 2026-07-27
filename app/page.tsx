@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
+import { AlertCircle, X } from 'lucide-react';
 import { Header } from '@/components/header';
 import { Toolbar } from '@/components/toolbar';
 import { PromptInput } from '@/components/prompt-input';
@@ -12,6 +13,8 @@ import type { ChatPanelRef } from '@/types';
 export default function Home() {
   const {
     selectedModelIds,
+    errorToast,
+    clearToast,
     toggleModel,
     registerPanel,
     sendToAll,
@@ -63,7 +66,7 @@ export default function Home() {
   );
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col h-screen overflow-hidden relative">
       <Header />
       <Toolbar
         selectedModelIds={selectedModelIds}
@@ -112,6 +115,20 @@ export default function Home() {
         isAnyStreaming={streamingState}
         disabled={selectedModelIds.length === 0}
       />
+
+      {/* Floating Error Toast Notification */}
+      {errorToast && (
+        <div className="fixed bottom-24 right-6 z-50 flex items-center gap-3 bg-destructive text-destructive-foreground px-4 py-3 rounded-lg shadow-lg border animate-in fade-in slide-in-from-bottom-5">
+          <AlertCircle className="h-5 w-5 shrink-0" />
+          <span className="text-sm font-medium">{errorToast}</span>
+          <button
+            onClick={clearToast}
+            className="ml-2 rounded-md p-1 hover:bg-destructive-foreground/20 transition-colors"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
