@@ -93,7 +93,14 @@ export default function Home() {
             {selectedModelIds.map((modelId) => {
               const config = getModelById(modelId);
               if (!config) return null;
-              return <ChatPanel key={modelId} ref={getRefCallback(modelId)} modelConfig={config} />;
+              return (
+                <ChatPanel
+                  key={modelId}
+                  ref={getRefCallback(modelId)}
+                  modelConfig={config}
+                  onRemove={() => toggleModel(modelId)}
+                />
+              );
             })}
           </div>
         )}
