@@ -87,7 +87,7 @@ export default function Home() {
           <div
             className="grid gap-4 h-full"
             style={{
-              gridTemplateColumns: `repeat(${Math.min(selectedModelIds.length, 3)}, minmax(0, 1fr))`,
+              gridTemplateColumns: `repeat(${Math.min(selectedModelIds.length, 5)}, minmax(0, 1fr))`,
             }}
           >
             {selectedModelIds.map((modelId) => {
