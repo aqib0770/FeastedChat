@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { DEFAULT_SELECTED_MODEL_IDS } from '@/lib/models';
 import type { ChatPanelRef } from '@/types';
 
@@ -14,9 +14,25 @@ import type { ChatPanelRef } from '@/types';
  */
 export function useChatComparison() {
   const [selectedModelIds, setSelectedModelIds] = useState<string[]>(DEFAULT_SELECTED_MODEL_IDS);
+  const [errorToast, setErrorToast] = useState<string | null>(null);
+
+  // Auto-dismiss toast after 4 seconds
+  useEffect(() => {
+    if (errorToast) {
+      const timer = setTimeout(() => {
+        setErrorToast(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorToast]);
 
   // Map of model ID → ChatPanelRef
   const panelRefs = useRef<Map<string, ChatPanelRef>>(new Map());
+
+  /** Clear the current error toast message */
+  const clearToast = useCallback(() => {
+    setErrorToast(null);
+  }, []);
 
   /** Register a panel ref (called by each ChatPanel on mount) */
   const registerPanel = useCallback((modelId: string, ref: ChatPanelRef | null) => {
@@ -35,6 +51,13 @@ export function useChatComparison() {
         panelRefs.current.delete(modelId);
         return prev.filter((id) => id !== modelId);
       }
+      if (prev.length >= 5) {
+        setErrorToast(
+          'Maximum limit reached: You can compare up to 5 models at a time. Please remove a model before adding a new one.'
+        );
+        return prev;
+      }
+      setErrorToast(null);
       return [...prev, modelId];
     });
   }, []);
@@ -70,6 +93,8 @@ export function useChatComparison() {
 
   return {
     selectedModelIds,
+    errorToast,
+    clearToast,
     toggleModel,
     registerPanel,
     sendToAll,
