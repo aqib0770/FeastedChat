@@ -118,11 +118,11 @@ export function CodeBlock({ language, value }: CodeBlockProps) {
         </button>
       </div>
 
-      {/* Code content with horizontal scrollbar */}
+      {/* Code content with horizontal scrollbar - single seamless background */}
       <div className="overflow-x-auto p-4 text-xs md:text-sm leading-relaxed text-zinc-100 bg-[#1e1e1e]">
         {highlightedHtml ? (
           <div
-            className="[&>pre]:m-0 [&>pre]:p-0 [&>pre]:bg-transparent [&>pre]:overflow-x-auto [&>pre]:whitespace-pre [&>pre]:font-mono [&_code]:font-mono"
+            className="[&>pre]:!bg-transparent [&>pre]:!m-0 [&>pre]:!p-0 [&>pre]:!border-0 [&>pre]:!shadow-none [&>pre]:overflow-x-auto [&>pre]:whitespace-pre [&>pre]:font-mono [&_code]:font-mono"
             dangerouslySetInnerHTML={{ __html: highlightedHtml }}
           />
         ) : (
