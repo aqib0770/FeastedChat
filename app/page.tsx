@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useCallback, useRef, useState } from "react";
-import { Header } from "@/components/header";
-import { Toolbar } from "@/components/toolbar";
-import { PromptInput } from "@/components/prompt-input";
-import { ChatPanel } from "@/components/chat-panel";
-import { useChatComparison } from "@/hooks/use-chat-comparison";
-import { getModelById } from "@/lib/models";
-import type { ChatPanelRef } from "@/types";
+import { useCallback, useRef, useState } from 'react';
+import { Header } from '@/components/header';
+import { Toolbar } from '@/components/toolbar';
+import { PromptInput } from '@/components/prompt-input';
+import { ChatPanel } from '@/components/chat-panel';
+import { useChatComparison } from '@/hooks/use-chat-comparison';
+import { getModelById } from '@/lib/models';
+import type { ChatPanelRef } from '@/types';
 
 export default function Home() {
   const {
@@ -35,7 +35,7 @@ export default function Home() {
         }
       }, 200);
     },
-    [sendToAll, isAnyStreaming],
+    [sendToAll, isAnyStreaming]
   );
 
   const handleStopAll = useCallback(() => {
@@ -59,7 +59,7 @@ export default function Home() {
       }
       return refCallbacksRef.current.get(modelId)!;
     },
-    [registerPanel],
+    [registerPanel]
   );
 
   return (
@@ -77,9 +77,7 @@ export default function Home() {
         {selectedModelIds.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center space-y-3">
-              <p className="text-muted-foreground text-lg">
-                No models selected
-              </p>
+              <p className="text-muted-foreground text-lg">No models selected</p>
               <p className="text-muted-foreground/60 text-sm">
                 Use the toolbar above to add models and start comparing.
               </p>
@@ -95,13 +93,7 @@ export default function Home() {
             {selectedModelIds.map((modelId) => {
               const config = getModelById(modelId);
               if (!config) return null;
-              return (
-                <ChatPanel
-                  key={modelId}
-                  ref={getRefCallback(modelId)}
-                  modelConfig={config}
-                />
-              );
+              return <ChatPanel key={modelId} ref={getRefCallback(modelId)} modelConfig={config} />;
             })}
           </div>
         )}

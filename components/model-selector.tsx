@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Plus, Check } from "lucide-react";
-import { AVAILABLE_MODELS } from "@/lib/models";
-import { type ModelConfig } from "@/types";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import * as React from 'react';
+import { Plus, Check } from 'lucide-react';
+import { AVAILABLE_MODELS } from '@/lib/models';
+import { type ModelConfig } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 
 export function ModelSelector({
   selectedModelIds,

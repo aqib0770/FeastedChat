@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState, useCallback, type KeyboardEvent } from "react";
-import { ArrowUp } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { useState, useCallback, type KeyboardEvent } from 'react';
+import { ArrowUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 
 export function PromptInput({
   onSend,
@@ -12,16 +12,16 @@ export function PromptInput({
   onSend: (content: string) => void;
   isAnyStreaming: boolean;
 }) {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === "Enter" && !e.shiftKey) {
+      if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         const trimmed = value.trim();
         if (trimmed && !isAnyStreaming) {
           onSend(trimmed);
-          setValue("");
+          setValue('');
         }
       }
     },
@@ -32,7 +32,7 @@ export function PromptInput({
     const trimmed = value.trim();
     if (trimmed && !isAnyStreaming) {
       onSend(trimmed);
-      setValue("");
+      setValue('');
     }
   };
 

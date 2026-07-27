@@ -1,16 +1,11 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Square, Trash2 } from "lucide-react";
-import { ModelSelector } from "@/components/model-selector";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import * as React from 'react';
+import { Square, Trash2 } from 'lucide-react';
+import { ModelSelector } from '@/components/model-selector';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function Toolbar({
   selectedModelIds,
@@ -27,10 +22,7 @@ export function Toolbar({
     <TooltipProvider>
       <div className="flex items-center justify-between px-6 py-3 border-b">
         <div className="flex items-center gap-2">
-          <ModelSelector
-            selectedModelIds={selectedModelIds}
-            onToggleModel={onToggleModel}
-          />
+          <ModelSelector selectedModelIds={selectedModelIds} onToggleModel={onToggleModel} />
           <Tooltip>
             <TooltipTrigger
               render={
@@ -48,7 +40,9 @@ export function Toolbar({
             <TooltipContent>Stop all streams</TooltipContent>
           </Tooltip>
           <Tooltip>
-            <TooltipTrigger render={<Button variant="outline" size="sm" onClick={onClearAll} className="gap-2" />}>
+            <TooltipTrigger
+              render={<Button variant="outline" size="sm" onClick={onClearAll} className="gap-2" />}
+            >
               <Trash2 className="h-4 w-4" />
               <span className="sr-only sm:not-sr-only">Clear All</span>
             </TooltipTrigger>
@@ -57,7 +51,7 @@ export function Toolbar({
         </div>
         <div>
           <Badge variant="secondary">
-            {selectedModelIds.length} model{selectedModelIds.length === 1 ? "" : "s"}
+            {selectedModelIds.length} model{selectedModelIds.length === 1 ? '' : 's'}
           </Badge>
         </div>
       </div>

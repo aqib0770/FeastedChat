@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useCallback, useRef } from "react";
-import { DEFAULT_SELECTED_MODEL_IDS } from "@/lib/models";
-import type { ChatPanelRef } from "@/types";
+import { useState, useCallback, useRef } from 'react';
+import { DEFAULT_SELECTED_MODEL_IDS } from '@/lib/models';
+import type { ChatPanelRef } from '@/types';
 
 /**
  * Orchestration hook for managing the multi-chat comparison.
@@ -13,9 +13,7 @@ import type { ChatPanelRef } from "@/types";
  * - Provide send-to-all, stop-all, clear-all actions
  */
 export function useChatComparison() {
-  const [selectedModelIds, setSelectedModelIds] = useState<string[]>(
-    DEFAULT_SELECTED_MODEL_IDS,
-  );
+  const [selectedModelIds, setSelectedModelIds] = useState<string[]>(DEFAULT_SELECTED_MODEL_IDS);
 
   // Map of model ID → ChatPanelRef
   const panelRefs = useRef<Map<string, ChatPanelRef>>(new Map());

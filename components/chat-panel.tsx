@@ -1,6 +1,13 @@
 'use client';
 
-import React, { forwardRef, useImperativeHandle, useRef, useEffect, useState, useCallback } from 'react';
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useEffect,
+  useState,
+  useCallback,
+} from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -17,7 +24,10 @@ interface ChatPanelProps {
 }
 
 /** Extract text content from a v7 UIMessage (uses parts array) */
-const getMessageText = (message: { parts?: Array<{ type: string; text?: string }>; content?: string }): string => {
+const getMessageText = (message: {
+  parts?: Array<{ type: string; text?: string }>;
+  content?: string;
+}): string => {
   if (message.parts) {
     return message.parts
       .filter((p) => p.type === 'text' && p.text)
@@ -30,15 +40,7 @@ const getMessageText = (message: { parts?: Array<{ type: string; text?: string }
 
 export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(({ modelConfig }, ref) => {
   // Each panel gets its own useChat with a unique transport that sends the model ID
-  const {
-    messages,
-    sendMessage,
-    stop,
-    setMessages,
-    regenerate,
-    status,
-    error,
-  } = useChat({
+  const { messages, sendMessage, stop, setMessages, regenerate, status, error } = useChat({
     id: 'chat-' + modelConfig.id,
     transport: new DefaultChatTransport({
       api: '/api/chat',
@@ -92,7 +94,7 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(({ modelConfig
   // Copy last assistant message
   const [isCopied, setIsCopied] = useState(false);
   const handleCopy = useCallback(() => {
-    const lastAssistantMessage = messages.filter(m => m.role === 'assistant').pop();
+    const lastAssistantMessage = messages.filter((m) => m.role === 'assistant').pop();
     if (lastAssistantMessage) {
       navigator.clipboard.writeText(getMessageText(lastAssistantMessage));
       setIsCopied(true);
@@ -117,9 +119,7 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(({ modelConfig
             </Badge>
           </div>
           <div className="flex items-center gap-2">
-            {isStreaming && (
-              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-            )}
+            {isStreaming && <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />}
             {(elapsedMs > 0 || isStreaming) && (
               <span className="text-xs text-muted-foreground">
                 {(elapsedMs / 1000).toFixed(1)}s
@@ -131,7 +131,9 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(({ modelConfig
           <TooltipProvider>
             {isStreaming && (
               <Tooltip>
-                <TooltipTrigger render={<Button variant="ghost" size="icon" className="h-7 w-7" onClick={stop} />}>
+                <TooltipTrigger
+                  render={<Button variant="ghost" size="icon" className="h-7 w-7" onClick={stop} />}
+                >
                   <Square className="h-3.5 w-3.5" />
                 </TooltipTrigger>
                 <TooltipContent>Stop generating</TooltipContent>
@@ -140,7 +142,16 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(({ modelConfig
 
             {!isStreaming && messages.length > 0 && (
               <Tooltip>
-                <TooltipTrigger render={<Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => regenerate()} />}>
+                <TooltipTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => regenerate()}
+                    />
+                  }
+                >
                   <RotateCcw className="h-3.5 w-3.5" />
                 </TooltipTrigger>
                 <TooltipContent>Regenerate response</TooltipContent>
@@ -150,14 +161,36 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(({ modelConfig
             {messages.length > 0 && (
               <>
                 <Tooltip>
-                  <TooltipTrigger render={<Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleCopy} />}>
-                    {isCopied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={handleCopy}
+                      />
+                    }
+                  >
+                    {isCopied ? (
+                      <Check className="h-3.5 w-3.5 text-green-500" />
+                    ) : (
+                      <Copy className="h-3.5 w-3.5" />
+                    )}
                   </TooltipTrigger>
                   <TooltipContent>Copy last response</TooltipContent>
                 </Tooltip>
 
                 <Tooltip>
-                  <TooltipTrigger render={<Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setMessages([])} />}>
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => setMessages([])}
+                      />
+                    }
+                  >
                     <Trash2 className="h-3.5 w-3.5" />
                   </TooltipTrigger>
                   <TooltipContent>Clear messages</TooltipContent>
@@ -176,7 +209,11 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(({ modelConfig
                 key={message.id}
                 role={message.role as 'user' | 'assistant'}
                 content={getMessageText(message)}
-                isStreaming={isStreaming && message.id === messages[messages.length - 1]?.id && message.role === 'assistant'}
+                isStreaming={
+                  isStreaming &&
+                  message.id === messages[messages.length - 1]?.id &&
+                  message.role === 'assistant'
+                }
               />
             ))}
             <div ref={messagesEndRef} />

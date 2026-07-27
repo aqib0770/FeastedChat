@@ -8,7 +8,10 @@ interface MarkdownRendererProps {
   isStreaming?: boolean;
 }
 
-export const MarkdownRenderer = React.memo(function MarkdownRenderer({ content, isStreaming = false }: MarkdownRendererProps) {
+export const MarkdownRenderer = React.memo(function MarkdownRenderer({
+  content,
+  isStreaming = false,
+}: MarkdownRendererProps) {
   return (
     <div className="prose prose-sm prose-invert max-w-none prose-pre:p-0 prose-pre:bg-transparent">
       <Streamdown isAnimating={isStreaming} plugins={{ code }}>

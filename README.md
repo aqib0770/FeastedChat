@@ -70,6 +70,6 @@ Each panel owns its own `useChat` instance and streams independently.
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `AI_GATEWAY_API_KEY` | Yes | Vercel AI Gateway API key |
+| Variable             | Required | Description               |
+| -------------------- | -------- | ------------------------- |
+| `AI_GATEWAY_API_KEY` | Yes      | Vercel AI Gateway API key |

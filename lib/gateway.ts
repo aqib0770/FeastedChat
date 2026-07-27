@@ -1,4 +1,4 @@
-import { gateway } from "@ai-sdk/gateway";
+import { gateway } from '@ai-sdk/gateway';
 
 /**
  * Returns a model instance from the Vercel AI Gateway.
