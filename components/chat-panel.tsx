@@ -203,7 +203,7 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(({ modelConfig
 
       <CardContent className="flex-1 overflow-hidden p-0 relative">
         <ScrollArea className="h-full">
-          <div className="flex flex-col gap-4 p-4">
+          <div className="flex flex-col gap-4 p-4 min-w-0">
             {messages.map((message) => (
               <Message
                 key={message.id}
