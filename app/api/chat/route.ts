@@ -8,8 +8,26 @@ import {
 import { ObjectId } from 'mongodb';
 import { getModel } from '@/lib/gateway';
 import { getDb, COLLECTIONS } from '@/lib/db';
+import { retrieveContext, buildRagSystemPrompt } from '@/lib/rag';
+import { requireSessionKey } from '@/lib/session';
 
 export const maxDuration = 60;
+
+/** Extract the latest user message text from UIMessages */
+function getLatestUserText(messages: UIMessage[]): string {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const msg = messages[i];
+    if (msg.role === 'user') {
+      if (msg.parts) {
+        return msg.parts
+          .filter((p) => p.type === 'text' && 'text' in p)
+          .map((p) => ('text' in p ? p.text : ''))
+          .join('');
+      }
+    }
+  }
+  return '';
+}
 
 export async function POST(req: Request) {
   try {
@@ -20,12 +38,16 @@ export async function POST(req: Request) {
       conversationId,
       turnId,
       responseId,
+      useRag,
+      documentIds,
     }: {
       messages: UIMessage[];
       model: string;
       conversationId?: string;
       turnId?: string;
       responseId?: string;
+      useRag?: boolean;
+      documentIds?: string[];
     } = body;
 
     if (!model || !messages) {
@@ -49,9 +71,27 @@ export async function POST(req: Request) {
       }
     }
 
+    // RAG: retrieve relevant context when enabled
+    let systemPrompt: string | undefined;
+    if (useRag) {
+      try {
+        const sessionKey = await requireSessionKey();
+        const query = getLatestUserText(messages);
+        if (query) {
+          const chunks = await retrieveContext(query, sessionKey, conversationId, documentIds);
+          systemPrompt = buildRagSystemPrompt(chunks) || undefined;
+        }
+      } catch (err) {
+        console.warn('[/api/chat] RAG retrieval failed, continuing without context:', err);
+      }
+    }
+
+    const modelMessages = await convertToModelMessages(messages);
+
     const result = streamText({
       model: getModel(model),
-      messages: await convertToModelMessages(messages),
+      ...(systemPrompt ? { system: systemPrompt } : {}),
+      messages: modelMessages,
       onFinish: async ({ text }) => {
         if (isPersisted) {
           try {
