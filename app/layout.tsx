@@ -1,10 +1,23 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Inter } from 'next/font/google';
+import {
+  Geist,
+  Geist_Mono,
+  Inter,
+  IBM_Plex_Sans,
+  Merriweather,
+  Roboto_Slab,
+  Public_Sans,
+  Space_Grotesk,
+} from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+const robotoSlab = Roboto_Slab({ subsets: ['latin'], variable: '--font-serif' });
+
+const spaceGroteskHeading = Space_Grotesk({ subsets: ['latin'], variable: '--font-heading' });
+
+const ibmPlexSans = IBM_Plex_Sans({ subsets: ['latin'], variable: '--font-sans' });
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -34,8 +47,11 @@ export default function RootLayout({
         'dark h-full antialiased',
         geistSans.variable,
         geistMono.variable,
-        inter.variable,
-        'font-sans'
+        'font-sans',
+        robotoSlab.variable,
+        spaceGroteskHeading.variable,
+        'font-sans',
+        ibmPlexSans.variable
       )}
     >
       <body className="min-h-full flex flex-col">
