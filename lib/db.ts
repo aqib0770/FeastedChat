@@ -33,6 +33,8 @@ async function ensureIndexes(db: Db): Promise<void> {
         .createIndex({ conversationId: 1, turnIndex: 1 }, { unique: true }),
       db.collection(COLLECTIONS.responses).createIndex({ turnId: 1, modelId: 1 }, { unique: true }),
       db.collection(COLLECTIONS.responses).createIndex({ conversationId: 1 }),
+      db.collection(COLLECTIONS.documents).createIndex({ sessionKey: 1, createdAt: -1 }),
+      db.collection(COLLECTIONS.documents).createIndex({ conversationId: 1 }),
     ]);
   } catch (err) {
     // If index creation fails (e.g. duplicate key), log but don't crash
@@ -52,4 +54,5 @@ export const COLLECTIONS = {
   conversations: 'conversations',
   turns: 'turns',
   responses: 'responses',
+  documents: 'documents',
 } as const;
