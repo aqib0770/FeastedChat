@@ -28,6 +28,25 @@ export interface PersistenceIds {
  * allowing the parent to imperatively send messages
  * and control streaming.
  */
+export interface StoredDocument {
+  id: string;
+  sessionKey: string;
+  conversationId?: string;
+  filename: string;
+  status: 'processing' | 'ready' | 'error';
+  chunkCount: number;
+  error?: string;
+  createdAt: string;
+}
+
+export interface RetrievedChunk {
+  text: string;
+  score: number;
+  filename: string;
+  chunkIndex: number;
+  documentId: string;
+}
+
 export interface ChatPanelRef {
   /** Append a user message and start streaming */
   sendMessage: (content: string, persistence?: PersistenceIds) => void;
