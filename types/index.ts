@@ -16,6 +16,13 @@ export interface PanelMeta {
   tokenCount: number;
 }
 
+/** Persistence IDs for wiring a stream to MongoDB */
+export interface PersistenceIds {
+  conversationId: string;
+  turnId: string;
+  responseId: string;
+}
+
 /**
  * Methods exposed by each ChatPanel via ref,
  * allowing the parent to imperatively send messages
@@ -23,7 +30,7 @@ export interface PanelMeta {
  */
 export interface ChatPanelRef {
   /** Append a user message and start streaming */
-  sendMessage: (content: string) => void;
+  sendMessage: (content: string, persistence?: PersistenceIds) => void;
   /** Abort the current stream */
   stop: () => void;
   /** Clear all messages in this panel */
