@@ -5,13 +5,28 @@ import {
   toUIMessageStream,
   type UIMessage,
 } from 'ai';
+import { ObjectId } from 'mongodb';
 import { getModel } from '@/lib/gateway';
+import { getDb, COLLECTIONS } from '@/lib/db';
 
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
-    const { messages, model }: { messages: UIMessage[]; model: string } = await req.json();
+    const body = await req.json();
+    const {
+      messages,
+      model,
+      conversationId,
+      turnId,
+      responseId,
+    }: {
+      messages: UIMessage[];
+      model: string;
+      conversationId?: string;
+      turnId?: string;
+      responseId?: string;
+    } = body;
 
     if (!model || !messages) {
       return new Response(JSON.stringify({ error: 'Missing required fields: model, messages' }), {
@@ -20,9 +35,62 @@ export async function POST(req: Request) {
       });
     }
 
+    const isPersisted = conversationId && turnId && responseId;
+
+    // Update response status to streaming
+    if (isPersisted) {
+      try {
+        const db = await getDb();
+        await db
+          .collection(COLLECTIONS.responses)
+          .updateOne({ _id: new ObjectId(responseId) }, { $set: { status: 'streaming' } });
+      } catch (err) {
+        console.warn('[/api/chat] Failed to update status to streaming:', err);
+      }
+    }
+
     const result = streamText({
       model: getModel(model),
       messages: await convertToModelMessages(messages),
+      onFinish: async ({ text }) => {
+        if (isPersisted) {
+          try {
+            const db = await getDb();
+            await db.collection(COLLECTIONS.responses).updateOne(
+              { _id: new ObjectId(responseId) },
+              {
+                $set: {
+                  content: text,
+                  status: 'complete',
+                  completedAt: new Date(),
+                },
+              }
+            );
+          } catch (err) {
+            console.error('[/api/chat] Failed to save response:', err);
+          }
+        }
+      },
+      onError: async ({ error }) => {
+        if (isPersisted) {
+          try {
+            const db = await getDb();
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            await db.collection(COLLECTIONS.responses).updateOne(
+              { _id: new ObjectId(responseId) },
+              {
+                $set: {
+                  status: 'error',
+                  error: errorMessage,
+                  completedAt: new Date(),
+                },
+              }
+            );
+          } catch (err) {
+            console.error('[/api/chat] Failed to save error status:', err);
+          }
+        }
+      },
     });
 
     return createUIMessageStreamResponse({
