@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from 'react';
 import { AlertCircle, X } from 'lucide-react';
 import { Header } from '@/components/header';
 import { Toolbar } from '@/components/toolbar';
+import { DocumentPanel } from '@/components/document-panel';
 import { PromptInput } from '@/components/prompt-input';
 import { ChatPanel } from '@/components/chat-panel';
 import { AppSidebar } from '@/components/sidebar';
@@ -13,6 +14,7 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { ModelFilter } from '@/components/model-filter';
 import { useChatComparison } from '@/hooks/use-chat-comparison';
 import { useConversations } from '@/hooks/use-conversations';
+import { useDocuments } from '@/hooks/use-documents';
 import { getModelById } from '@/lib/models';
 import type { ChatPanelRef } from '@/types';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
@@ -54,6 +56,18 @@ export default function Home() {
 
   // Track streaming state reactively for the UI
   const [streamingState, setStreamingState] = useState(false);
+  const [useRag, setUseRag] = useState(false);
+
+  const activeConvId = activeConversationId ?? conversationId;
+  const { documents, isUploading, uploadDocument, deleteDocument } = useDocuments(activeConvId);
+
+  const handleUpload = useCallback(
+    async (file: File) => {
+      await uploadDocument(file);
+      setUseRag(true);
+    },
+    [uploadDocument]
+  );
 
   const handleSend = useCallback(
     async (content: string) => {
@@ -150,12 +164,22 @@ export default function Home() {
 
         {/* Toolbar with mode toggle and model filter */}
         <div className="flex items-center justify-between px-4 py-2 border-b gap-2">
-          <Toolbar
-            selectedModelIds={selectedModelIds}
-            onToggleModel={toggleModel}
-            onStopAll={handleStopAll}
-            onClearAll={handleClearAll}
-          />
+          <div className="flex items-center gap-2">
+            <Toolbar
+              selectedModelIds={selectedModelIds}
+              onToggleModel={toggleModel}
+              onStopAll={handleStopAll}
+              onClearAll={handleClearAll}
+            />
+            <DocumentPanel
+              documents={documents}
+              isUploading={isUploading}
+              useRag={useRag}
+              onToggleRag={() => setUseRag((v) => !v)}
+              onUpload={handleUpload}
+              onDelete={deleteDocument}
+            />
+          </div>
           <div className="flex items-center gap-2">
             <ModelFilter
               availableModelIds={participatingModelIds}
@@ -218,6 +242,7 @@ export default function Home() {
                       chatId={`${panelKeyPrefix}:${modelId}`}
                       focusedTurnIndex={focusedTurnIndex}
                       turns={turns}
+                      useRag={useRag}
                     />
                   );
                 })}
