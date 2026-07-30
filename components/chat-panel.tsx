@@ -17,11 +17,31 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 import { Message } from '@/components/message';
 import type { ModelConfig, ChatPanelRef } from '@/types';
-import { Square, RotateCcw, Copy, Check, Trash2, AlertCircle, X } from 'lucide-react';
+import type { StoredTurn } from '@/lib/conversation-utils';
+import { Square, RotateCcw, Copy, Check, Trash2, AlertCircle, X, Info } from 'lucide-react';
+
+/** Persistence IDs passed alongside each message send */
+export interface PersistenceIds {
+  conversationId: string;
+  turnId: string;
+  responseId: string;
+}
 
 interface ChatPanelProps {
   modelConfig: ModelConfig;
   onRemove?: () => void;
+  /** Pre-loaded messages for hydrating from DB */
+  initialMessages?: Array<{
+    id: string;
+    role: 'user' | 'assistant';
+    parts: Array<{ type: 'text'; text: string }>;
+  }>;
+  /** Unique chat ID scoped to conversation + model */
+  chatId?: string;
+  /** Current focused turn index for snapshot mode (null = full mode) */
+  focusedTurnIndex?: number | null;
+  /** All turns in the conversation for snapshot rendering */
+  turns?: StoredTurn[];
 }
 
 /** Extract text content from a v7 UIMessage (uses parts array) */
@@ -40,20 +60,43 @@ const getMessageText = (message: {
 };
 
 export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
-  ({ modelConfig, onRemove }, ref) => {
+  (
+    { modelConfig, onRemove, initialMessages, chatId, focusedTurnIndex = null, turns = [] },
+    ref
+  ) => {
+    // Track persistence IDs for the current stream
+    const persistenceRef = useRef<PersistenceIds | null>(null);
+
     // Each panel gets its own useChat with a unique transport that sends the model ID
     const { messages, sendMessage, stop, setMessages, regenerate, status, error } = useChat({
-      id: 'chat-' + modelConfig.id,
+      id: chatId ?? 'chat-' + modelConfig.id,
       transport: new DefaultChatTransport({
         api: '/api/chat',
-        body: { model: modelConfig.gatewayId },
+        body: () => ({
+          model: modelConfig.gatewayId,
+          ...(persistenceRef.current ?? {}),
+        }),
       }),
     });
+
+    // Hydrate with historical messages when panel mounts or conversation changes
+    const hydrationKeyRef = useRef<string | null>(null);
+    useEffect(() => {
+      const key = chatId ?? modelConfig.id;
+      if (initialMessages && initialMessages.length > 0 && hydrationKeyRef.current !== key) {
+        hydrationKeyRef.current = key;
+        setMessages(initialMessages as Parameters<typeof setMessages>[0]);
+      }
+    }, [chatId, modelConfig.id, initialMessages, setMessages]);
 
     const isStreaming = status === 'streaming' || status === 'submitted';
 
     useImperativeHandle(ref, () => ({
-      sendMessage: (content: string) => sendMessage({ text: content }),
+      sendMessage: (content: string, persistence?: PersistenceIds) => {
+        // Store persistence IDs for the transport body
+        persistenceRef.current = persistence ?? null;
+        sendMessage({ text: content });
+      },
       stop,
       clear: () => setMessages([]),
       reload: () => regenerate(),
@@ -108,7 +151,40 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
     const messagesEndRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages, status]);
+    }, [messages, status, focusedTurnIndex]);
+
+    // Determine snapshot mode content
+    const isSnapshotMode = focusedTurnIndex !== null;
+    const snapshotTurn = isSnapshotMode
+      ? turns.find((t) => t.turnIndex === focusedTurnIndex)
+      : null;
+    const snapshotResponse = snapshotTurn
+      ? snapshotTurn.responses.find((r) => r.modelId === modelConfig.id)
+      : null;
+
+    // Check if model was active in this turn
+    const userMsgIndex = focusedTurnIndex !== null ? focusedTurnIndex * 2 : -1;
+    const assistantMsgIndex = focusedTurnIndex !== null ? focusedTurnIndex * 2 + 1 : -1;
+
+    const liveUserMsg =
+      userMsgIndex >= 0 && userMsgIndex < messages.length ? messages[userMsgIndex] : null;
+    const liveAssistantMsg =
+      assistantMsgIndex >= 0 && assistantMsgIndex < messages.length
+        ? messages[assistantMsgIndex]
+        : null;
+
+    const isModelActive =
+      isSnapshotMode &&
+      Boolean(
+        snapshotResponse ||
+        liveUserMsg ||
+        (snapshotTurn && snapshotTurn.responses.some((r) => r.modelId === modelConfig.id))
+      );
+
+    const snapshotUserText =
+      snapshotTurn?.userMessage?.content || (liveUserMsg ? getMessageText(liveUserMsg) : '');
+    const snapshotAssistantText =
+      snapshotResponse?.content || (liveAssistantMsg ? getMessageText(liveAssistantMsg) : '');
 
     return (
       <Card className="flex flex-col h-full min-h-[500px] overflow-hidden">
@@ -120,6 +196,11 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
                 <Badge variant="outline" className="text-xs">
                   {modelConfig.provider}
                 </Badge>
+                {isSnapshotMode && (
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
+                    Turn {focusedTurnIndex + 1}
+                  </Badge>
+                )}
               </div>
               <div className="flex items-center gap-2">
                 {isStreaming && <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />}
@@ -161,7 +242,7 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
                 </Tooltip>
               )}
 
-              {!isStreaming && messages.length > 0 && (
+              {!isStreaming && messages.length > 0 && !isSnapshotMode && (
                 <Tooltip>
                   <TooltipTrigger
                     render={
@@ -198,24 +279,26 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
                         <Copy className="h-3.5 w-3.5" />
                       )}
                     </TooltipTrigger>
-                    <TooltipContent>Copy last response</TooltipContent>
+                    <TooltipContent>Copy response</TooltipContent>
                   </Tooltip>
 
-                  <Tooltip>
-                    <TooltipTrigger
-                      render={
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() => setMessages([])}
-                        />
-                      }
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </TooltipTrigger>
-                    <TooltipContent>Clear messages</TooltipContent>
-                  </Tooltip>
+                  {!isSnapshotMode && (
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => setMessages([])}
+                          />
+                        }
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </TooltipTrigger>
+                      <TooltipContent>Clear messages</TooltipContent>
+                    </Tooltip>
+                  )}
                 </>
               )}
             </div>
@@ -225,18 +308,41 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
         <CardContent className="flex-1 overflow-hidden p-0 relative">
           <ScrollArea className="h-full">
             <div className="flex flex-col gap-4 p-4 min-w-0">
-              {messages.map((message) => (
-                <Message
-                  key={message.id}
-                  role={message.role as 'user' | 'assistant'}
-                  content={getMessageText(message)}
-                  isStreaming={
-                    isStreaming &&
-                    message.id === messages[messages.length - 1]?.id &&
-                    message.role === 'assistant'
-                  }
-                />
-              ))}
+              {isSnapshotMode ? (
+                isModelActive ? (
+                  <>
+                    {snapshotUserText && <Message role="user" content={snapshotUserText} />}
+                    <Message
+                      role="assistant"
+                      content={snapshotAssistantText}
+                      isStreaming={
+                        isStreaming && focusedTurnIndex === Math.floor((messages.length - 1) / 2)
+                      }
+                    />
+                  </>
+                ) : (
+                  <>
+                    {snapshotUserText && <Message role="user" content={snapshotUserText} />}
+                    <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/40 border border-dashed text-muted-foreground text-xs">
+                      <Info className="h-3.5 w-3.5 shrink-0" />
+                      <span>Model was not active for this turn.</span>
+                    </div>
+                  </>
+                )
+              ) : (
+                messages.map((message) => (
+                  <Message
+                    key={message.id}
+                    role={message.role as 'user' | 'assistant'}
+                    content={getMessageText(message)}
+                    isStreaming={
+                      isStreaming &&
+                      message.id === messages[messages.length - 1]?.id &&
+                      message.role === 'assistant'
+                    }
+                  />
+                ))
+              )}
               <div ref={messagesEndRef} />
             </div>
           </ScrollArea>
