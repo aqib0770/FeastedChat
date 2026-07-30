@@ -42,6 +42,8 @@ interface ChatPanelProps {
   focusedTurnIndex?: number | null;
   /** All turns in the conversation for snapshot rendering */
   turns?: StoredTurn[];
+  /** Enable RAG context injection */
+  useRag?: boolean;
 }
 
 /** Extract text content from a v7 UIMessage (uses parts array) */
@@ -61,11 +63,24 @@ const getMessageText = (message: {
 
 export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
   (
-    { modelConfig, onRemove, initialMessages, chatId, focusedTurnIndex = null, turns = [] },
+    {
+      modelConfig,
+      onRemove,
+      initialMessages,
+      chatId,
+      focusedTurnIndex = null,
+      turns = [],
+      useRag = false,
+    },
     ref
   ) => {
     // Track persistence IDs for the current stream
     const persistenceRef = useRef<PersistenceIds | null>(null);
+    const useRagRef = useRef(useRag);
+
+    useEffect(() => {
+      useRagRef.current = useRag;
+    }, [useRag]);
 
     // Each panel gets its own useChat with a unique transport that sends the model ID
     const { messages, sendMessage, stop, setMessages, regenerate, status, error } = useChat({
@@ -74,6 +89,7 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
         api: '/api/chat',
         body: () => ({
           model: modelConfig.gatewayId,
+          useRag: useRagRef.current,
           ...(persistenceRef.current ?? {}),
         }),
       }),
