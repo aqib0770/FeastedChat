@@ -16,6 +16,8 @@ export function PromptInput({
 }) {
   const [value, setValue] = useState('');
 
+  const isButtonDisabled = disabled || !value.trim() || isAnyStreaming;
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey) {
@@ -56,7 +58,8 @@ export function PromptInput({
           size="icon"
           className="rounded-full h-9 w-9 shrink-0"
           onClick={handleSend}
-          disabled={disabled || !value.trim() || isAnyStreaming}
+          disabled={isButtonDisabled}
+          suppressHydrationWarning
         >
           <ArrowUp className="h-4 w-4" />
           <span className="sr-only">Send</span>
