@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useCallback } from 'react';
-import { FileText, Upload, Trash2, Loader2, AlertCircle } from 'lucide-react';
+import { FileText, Upload, Trash2, Loader2, AlertCircle, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -12,6 +12,8 @@ interface DocumentPanelProps {
   isUploading: boolean;
   useRag: boolean;
   onToggleRag: () => void;
+  useMemory: boolean;
+  onToggleMemory: () => void;
   onUpload: (file: File) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }
@@ -21,6 +23,8 @@ export function DocumentPanel({
   isUploading,
   useRag,
   onToggleRag,
+  useMemory,
+  onToggleMemory,
   onUpload,
   onDelete,
 }: DocumentPanelProps) {
@@ -96,6 +100,27 @@ export function DocumentPanel({
             </TooltipContent>
           </Tooltip>
         )}
+
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant={useMemory ? 'default' : 'outline'}
+                size="sm"
+                className="gap-2"
+                onClick={onToggleMemory}
+              />
+            }
+          >
+            <Brain className="h-4 w-4" />
+            <span className="sr-only sm:not-sr-only">Memory {useMemory ? 'On' : 'Off'}</span>
+          </TooltipTrigger>
+          <TooltipContent>
+            {useMemory
+              ? 'Memory enabled — remembers facts across conversations'
+              : 'Enable memory to remember user preferences and context'}
+          </TooltipContent>
+        </Tooltip>
 
         {readyCount > 0 && (
           <Badge variant="secondary" className="gap-1">
