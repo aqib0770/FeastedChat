@@ -10,6 +10,7 @@ import { getModel } from '@/lib/gateway';
 import { getDb, COLLECTIONS } from '@/lib/db';
 import { retrieveContext, buildRagSystemPrompt } from '@/lib/rag';
 import { requireSessionKey } from '@/lib/session';
+import { searchMemories, addMemories, buildMemorySystemPrompt } from '@/lib/memory';
 
 export const maxDuration = 60;
 
@@ -39,6 +40,7 @@ export async function POST(req: Request) {
       turnId,
       responseId,
       useRag,
+      useMemory,
       documentIds,
     }: {
       messages: UIMessage[];
@@ -47,6 +49,7 @@ export async function POST(req: Request) {
       turnId?: string;
       responseId?: string;
       useRag?: boolean;
+      useMemory?: boolean;
       documentIds?: string[];
     } = body;
 
@@ -86,7 +89,32 @@ export async function POST(req: Request) {
       }
     }
 
-    const modelMessages = await convertToModelMessages(messages);
+    // Memory: retrieve relevant LTM and STM memories when enabled
+    if (useMemory) {
+      try {
+        const sessionKey = await requireSessionKey();
+        const query = getLatestUserText(messages);
+        if (query) {
+          const memories = await searchMemories(query, sessionKey, conversationId, 5);
+          const memoryPrompt = buildMemorySystemPrompt(memories);
+          if (memoryPrompt) {
+            systemPrompt = [memoryPrompt, systemPrompt].filter(Boolean).join('\n\n');
+          }
+        }
+      } catch (err) {
+        console.warn('[/api/chat] Memory retrieval failed, continuing without memory:', err);
+      }
+    }
+
+    // When memory is enabled, send only the latest user message.
+    // Memory layer provides all necessary LTM & STM context via the system prompt!
+    const effectiveMessages = useMemory
+      ? messages.filter((m) => m.role === 'user').slice(-1)
+      : messages;
+
+    const modelMessages = await convertToModelMessages(
+      effectiveMessages.length > 0 ? effectiveMessages : messages
+    );
 
     const result = streamText({
       model: getModel(model),
@@ -109,6 +137,28 @@ export async function POST(req: Request) {
           } catch (err) {
             console.error('[/api/chat] Failed to save response:', err);
           }
+        }
+
+        // Memory: extract and store facts asynchronously (non-blocking)
+        if (useMemory) {
+          (async () => {
+            try {
+              const sessionKey = await requireSessionKey();
+              const latestUserText = getLatestUserText(messages);
+              if (latestUserText && text) {
+                await addMemories(
+                  [
+                    { role: 'user', content: latestUserText },
+                    { role: 'assistant', content: text },
+                  ],
+                  sessionKey,
+                  conversationId
+                );
+              }
+            } catch (err) {
+              console.warn('[/api/chat] Memory storage failed (non-blocking):', err);
+            }
+          })();
         }
       },
       onError: async ({ error }) => {
