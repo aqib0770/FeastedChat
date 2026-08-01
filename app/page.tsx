@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AlertCircle, X } from 'lucide-react';
 import { Header } from '@/components/header';
 import { Toolbar } from '@/components/toolbar';
@@ -57,6 +57,7 @@ export default function Home() {
   // Track streaming state reactively for the UI
   const [streamingState, setStreamingState] = useState(false);
   const [useRag, setUseRag] = useState(false);
+  const [useMemory, setUseMemory] = useState(true);
 
   const activeConvId = activeConversationId ?? conversationId;
   const { documents, isUploading, uploadDocument, deleteDocument } = useDocuments(activeConvId);
@@ -69,15 +70,34 @@ export default function Home() {
     [uploadDocument]
   );
 
+  const streamingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (streamingIntervalRef.current) clearInterval(streamingIntervalRef.current);
+    };
+  }, []);
+
   const handleSend = useCallback(
     async (content: string) => {
       await sendToAll(content);
       // Start polling streaming state
       setStreamingState(true);
-      const interval = setInterval(() => {
-        if (!isAnyStreaming()) {
+
+      if (streamingIntervalRef.current) clearInterval(streamingIntervalRef.current);
+
+      const startTime = Date.now();
+      streamingIntervalRef.current = setInterval(() => {
+        const isStreaming = isAnyStreaming();
+        const elapsed = Date.now() - startTime;
+
+        // Stop polling if all streams finished OR if 60s safety timeout reached
+        if (!isStreaming || elapsed > 60000) {
           setStreamingState(false);
-          clearInterval(interval);
+          if (streamingIntervalRef.current) {
+            clearInterval(streamingIntervalRef.current);
+            streamingIntervalRef.current = null;
+          }
           // Refresh sidebar and turns to show updated conversation
           refreshConversations();
           reloadTurns();
@@ -90,11 +110,19 @@ export default function Home() {
   const handleStopAll = useCallback(() => {
     stopAll();
     setStreamingState(false);
+    if (streamingIntervalRef.current) {
+      clearInterval(streamingIntervalRef.current);
+      streamingIntervalRef.current = null;
+    }
   }, [stopAll]);
 
   const handleClearAll = useCallback(() => {
     clearAll();
     setStreamingState(false);
+    if (streamingIntervalRef.current) {
+      clearInterval(streamingIntervalRef.current);
+      streamingIntervalRef.current = null;
+    }
   }, [clearAll]);
 
   const handleSelectConversation = useCallback(
@@ -176,6 +204,8 @@ export default function Home() {
               isUploading={isUploading}
               useRag={useRag}
               onToggleRag={() => setUseRag((v) => !v)}
+              useMemory={useMemory}
+              onToggleMemory={() => setUseMemory((v) => !v)}
               onUpload={handleUpload}
               onDelete={deleteDocument}
             />
@@ -243,6 +273,7 @@ export default function Home() {
                       focusedTurnIndex={focusedTurnIndex}
                       turns={turns}
                       useRag={useRag}
+                      useMemory={useMemory}
                     />
                   );
                 })}
