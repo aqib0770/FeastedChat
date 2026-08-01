@@ -44,6 +44,8 @@ interface ChatPanelProps {
   turns?: StoredTurn[];
   /** Enable RAG context injection */
   useRag?: boolean;
+  /** Enable mem0 memory layer */
+  useMemory?: boolean;
 }
 
 /** Extract text content from a v7 UIMessage (uses parts array) */
@@ -71,16 +73,22 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
       focusedTurnIndex = null,
       turns = [],
       useRag = false,
+      useMemory = false,
     },
     ref
   ) => {
     // Track persistence IDs for the current stream
     const persistenceRef = useRef<PersistenceIds | null>(null);
     const useRagRef = useRef(useRag);
+    const useMemoryRef = useRef(useMemory);
 
     useEffect(() => {
       useRagRef.current = useRag;
     }, [useRag]);
+
+    useEffect(() => {
+      useMemoryRef.current = useMemory;
+    }, [useMemory]);
 
     // Each panel gets its own useChat with a unique transport that sends the model ID
     const { messages, sendMessage, stop, setMessages, regenerate, status, error } = useChat({
@@ -90,6 +98,7 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
         body: () => ({
           model: modelConfig.gatewayId,
           useRag: useRagRef.current,
+          useMemory: useMemoryRef.current,
           ...(persistenceRef.current ?? {}),
         }),
       }),
@@ -107,17 +116,28 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
 
     const isStreaming = status === 'streaming' || status === 'submitted';
 
-    useImperativeHandle(ref, () => ({
-      sendMessage: (content: string, persistence?: PersistenceIds) => {
-        // Store persistence IDs for the transport body
-        persistenceRef.current = persistence ?? null;
-        sendMessage({ text: content });
-      },
-      stop,
-      clear: () => setMessages([]),
-      reload: () => regenerate(),
-      isStreaming,
-    }));
+    const isStreamingRef = useRef(isStreaming);
+    useEffect(() => {
+      isStreamingRef.current = isStreaming;
+    }, [isStreaming]);
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        sendMessage: (content: string, persistence?: PersistenceIds) => {
+          // Store persistence IDs for the transport body
+          persistenceRef.current = persistence ?? null;
+          sendMessage({ text: content });
+        },
+        stop,
+        clear: () => setMessages([]),
+        reload: () => regenerate(),
+        get isStreaming() {
+          return isStreamingRef.current;
+        },
+      }),
+      [sendMessage, stop, setMessages, regenerate]
+    );
 
     // Elapsed time tracking
     const [elapsedMs, setElapsedMs] = useState(0);
