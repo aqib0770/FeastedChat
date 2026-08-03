@@ -9,32 +9,34 @@ export function PromptInput({
   onSend,
   isAnyStreaming,
   disabled = false,
+  isUploading = false,
 }: {
   onSend: (content: string) => void;
   isAnyStreaming: boolean;
   disabled?: boolean;
+  isUploading?: boolean;
 }) {
   const [value, setValue] = useState('');
 
-  const isButtonDisabled = disabled || !value.trim() || isAnyStreaming;
+  const isButtonDisabled = disabled || !value.trim() || isAnyStreaming || isUploading;
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         const trimmed = value.trim();
-        if (trimmed && !isAnyStreaming && !disabled) {
+        if (trimmed && !isAnyStreaming && !disabled && !isUploading) {
           onSend(trimmed);
           setValue('');
         }
       }
     },
-    [value, isAnyStreaming, disabled, onSend]
+    [value, isAnyStreaming, disabled, isUploading, onSend]
   );
 
   const handleSend = () => {
     const trimmed = value.trim();
-    if (trimmed && !isAnyStreaming && !disabled) {
+    if (trimmed && !isAnyStreaming && !disabled && !isUploading) {
       onSend(trimmed);
       setValue('');
     }
@@ -48,9 +50,13 @@ export function PromptInput({
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={
-            disabled ? 'Select at least one model to start...' : 'Send a message to all models...'
+            isUploading
+              ? 'Uploading PDF...'
+              : disabled
+                ? 'Select at least one model to start...'
+                : 'Send a message to all models...'
           }
-          disabled={disabled}
+          disabled={disabled || isUploading}
           rows={1}
           className="border-0 shadow-none resize-none focus-visible:ring-0 min-h-[44px] max-h-[200px] p-3 flex-1"
         />
