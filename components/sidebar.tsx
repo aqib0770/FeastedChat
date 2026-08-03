@@ -3,6 +3,7 @@
 import React from 'react';
 import { ConversationSummary } from '@/lib/conversation-utils';
 import { Plus, MessageSquare, Trash2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -24,6 +25,7 @@ interface AppSidebarProps {
   onSelectConversation: (id: string) => void;
   onNewConversation: () => void;
   onDeleteConversation: (id: string) => void;
+  className?: string;
 }
 
 function getRelativeTime(dateStr: string): string {
@@ -73,11 +75,12 @@ export function AppSidebar({
   onSelectConversation,
   onNewConversation,
   onDeleteConversation,
+  className,
 }: AppSidebarProps) {
   const grouped = groupConversations(conversations);
 
   return (
-    <Sidebar collapsible="offcanvas" className="border-r bg-sidebar">
+    <Sidebar collapsible="offcanvas" className={cn('border-r bg-sidebar', className)}>
       <SidebarHeader className="p-4 border-b border-border/60">
         <Button
           onClick={onNewConversation}
