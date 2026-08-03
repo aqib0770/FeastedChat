@@ -249,7 +249,10 @@ export default function Home() {
           <PromptInput
             onSend={handleSend}
             isAnyStreaming={streamingState}
-            disabled={selectedModelIds.length === 0}
+            disabled={selectedModelIds.length === 0 || viewMode === 'timeline'}
+            disabledPlaceholder={
+              viewMode === 'timeline' ? 'Prompting disabled in timeline view' : undefined
+            }
             isUploading={isUploading}
             onUpload={handleUpload}
             documents={documents}
