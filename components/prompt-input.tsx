@@ -20,6 +20,7 @@ export function PromptInput({
   onSend,
   isAnyStreaming,
   disabled = false,
+  disabledPlaceholder,
   isUploading = false,
   onUpload,
   documents = [],
@@ -30,6 +31,7 @@ export function PromptInput({
   onSend: (content: string) => void;
   isAnyStreaming: boolean;
   disabled?: boolean;
+  disabledPlaceholder?: string;
   isUploading?: boolean;
   onUpload?: (file: File) => Promise<void>;
   documents?: StoredDocument[];
@@ -136,7 +138,7 @@ export function PromptInput({
                 isUploading
                   ? 'Uploading PDF document...'
                   : disabled
-                    ? 'Select at least one model to start comparing...'
+                    ? (disabledPlaceholder ?? 'Select at least one model to start comparing...')
                     : 'Send a message to all models...'
               }
               disabled={disabled || isUploading}

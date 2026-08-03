@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { StoredTurn } from '@/lib/conversation-utils';
 import { getModelById } from '@/lib/models';
 import { MarkdownRenderer } from '@/components/markdown-renderer';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { User, Bot } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { User, Bot, Copy, Check } from 'lucide-react';
 
 interface TimelineViewProps {
   turns: StoredTurn[];
@@ -15,6 +17,14 @@ interface TimelineViewProps {
 }
 
 export function TimelineView({ turns, modelFilter, focusedTurnIndex = null }: TimelineViewProps) {
+  const [copiedResponseId, setCopiedResponseId] = useState<string | null>(null);
+
+  const handleCopy = (responseId: string, content: string) => {
+    navigator.clipboard.writeText(content);
+    setCopiedResponseId(responseId);
+    setTimeout(() => setCopiedResponseId((id) => (id === responseId ? null : id)), 2000);
+  };
+
   if (!turns || turns.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
@@ -86,6 +96,31 @@ export function TimelineView({ turns, modelFilter, focusedTurnIndex = null }: Ti
                             </span>
                           )}
                         </div>
+                      )}
+                      {response.content && (
+                        <TooltipProvider>
+                          <div className="flex items-center pt-2">
+                            <Tooltip>
+                              <TooltipTrigger
+                                render={
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7 rounded-lg"
+                                    onClick={() => handleCopy(response.id, response.content)}
+                                  />
+                                }
+                              >
+                                {copiedResponseId === response.id ? (
+                                  <Check className="h-4 w-4 text-primary" />
+                                ) : (
+                                  <Copy className="h-4 w-4" />
+                                )}
+                              </TooltipTrigger>
+                              <TooltipContent>Copy response</TooltipContent>
+                            </Tooltip>
+                          </div>
+                        </TooltipProvider>
                       )}
                     </Card>
                   </div>
