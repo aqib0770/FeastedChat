@@ -64,7 +64,6 @@ const config = {
 /* ------------------------------------------------------------------ */
 
 declare global {
-  // eslint-disable-next-line no-var
   var _mem0Instance: Memory | undefined;
 }
 

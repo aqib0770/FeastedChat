@@ -7,9 +7,7 @@ export const QDRANT_COLLECTION = 'document_chunks';
 export const VECTOR_SIZE = 1024;
 
 declare global {
-  // eslint-disable-next-line no-var
   var _qdrantClient: QdrantClient | undefined;
-  // eslint-disable-next-line no-var
   var _qdrantCollectionReady: boolean | undefined;
 }
 

@@ -3,9 +3,7 @@ import { MongoClient, Db } from 'mongodb';
 const uri = process.env.MONGODB_URI ?? 'mongodb://127.0.0.1:27017/feastedchat';
 
 declare global {
-  // eslint-disable-next-line no-var
   var _mongoClientPromise: Promise<MongoClient> | undefined;
-  // eslint-disable-next-line no-var
   var _mongoIndexesCreated: boolean | undefined;
 }
 
