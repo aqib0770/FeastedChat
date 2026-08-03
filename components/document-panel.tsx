@@ -71,16 +71,6 @@ export function DocumentPanel({
               : 'Enable memory to retain context across messages'}
           </TooltipContent>
         </Tooltip>
-
-        {readyCount > 0 && (
-          <Badge
-            variant="secondary"
-            className="h-10 px-3 text-xs font-semibold rounded-lg bg-secondary text-secondary-foreground border border-border/50 gap-1.5 shrink-0"
-          >
-            <FileText className="h-3.5 w-3.5" />
-            {readyCount} doc{readyCount === 1 ? '' : 's'}
-          </Badge>
-        )}
       </div>
     </TooltipProvider>
   );
