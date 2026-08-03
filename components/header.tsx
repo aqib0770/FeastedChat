@@ -1,7 +1,5 @@
 import * as React from 'react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Sun } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 export function Header() {
   return (
