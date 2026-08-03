@@ -5,29 +5,50 @@ import type { StoredDocument } from '@/types';
 
 export function useDocuments(conversationId?: string | null) {
   const [documents, setDocuments] = useState<StoredDocument[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchDocuments = useCallback(async () => {
+  const loadDocuments = useCallback(async () => {
+    const params = conversationId ? `?conversationId=${conversationId}` : '';
+    const res = await fetch(`/api/documents${params}`);
+    if (!res.ok) throw new Error('Failed to fetch documents');
+    return (await res.json()) as StoredDocument[];
+  }, [conversationId]);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const data = await loadDocuments();
+        if (active) {
+          setDocuments(data);
+          setError(null);
+        }
+      } catch (err) {
+        if (active) {
+          setError(err instanceof Error ? err.message : 'Failed to load documents');
+        }
+      } finally {
+        if (active) setIsLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [loadDocuments]);
+
+  const refreshDocuments = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const params = conversationId ? `?conversationId=${conversationId}` : '';
-      const res = await fetch(`/api/documents${params}`);
-      if (!res.ok) throw new Error('Failed to fetch documents');
-      const data = await res.json();
-      setDocuments(data);
+      setDocuments(await loadDocuments());
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load documents');
     } finally {
       setIsLoading(false);
     }
-  }, [conversationId]);
-
-  useEffect(() => {
-    fetchDocuments();
-  }, [fetchDocuments]);
+  }, [loadDocuments]);
 
   const uploadDocument = useCallback(
     async (file: File) => {
@@ -90,6 +111,6 @@ export function useDocuments(conversationId?: string | null) {
     error,
     uploadDocument,
     deleteDocument,
-    refreshDocuments: fetchDocuments,
+    refreshDocuments,
   };
 }
