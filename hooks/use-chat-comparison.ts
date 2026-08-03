@@ -188,23 +188,6 @@ export function useChatComparison() {
     [conversationId, selectedModelIds]
   );
 
-  /** Stop streaming on all panels */
-  const stopAll = useCallback(() => {
-    panelRefs.current.forEach((ref) => {
-      ref.stop();
-    });
-  }, []);
-
-  /** Clear messages on all panels and reset conversation */
-  const clearAll = useCallback(() => {
-    panelRefs.current.forEach((ref) => {
-      ref.clear();
-    });
-    setTurns([]);
-    setFocusedTurnIndex(null);
-    setPanelViewMode('full');
-  }, []);
-
   /** Check if any panel is currently streaming */
   const isAnyStreaming = useCallback((): boolean => {
     for (const ref of panelRefs.current.values()) {
@@ -292,8 +275,6 @@ export function useChatComparison() {
 
     // Actions
     sendToAll,
-    stopAll,
-    clearAll,
     isAnyStreaming,
     hydrateConversation,
     startNewConversation,

@@ -120,14 +120,13 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
           persistenceRef.current = persistence ?? null;
           sendMessage({ text: content });
         },
-        stop,
         clear: () => setMessages([]),
         reload: () => regenerate(),
         get isStreaming() {
           return isStreamingRef.current;
         },
       }),
-      [sendMessage, stop, setMessages, regenerate]
+      [sendMessage, setMessages, regenerate]
     );
 
     // Elapsed time tracking

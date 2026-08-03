@@ -50,8 +50,6 @@ export interface RetrievedChunk {
 export interface ChatPanelRef {
   /** Append a user message and start streaming */
   sendMessage: (content: string, persistence?: PersistenceIds) => void;
-  /** Abort the current stream */
-  stop: () => void;
   /** Clear all messages in this panel */
   clear: () => void;
   /** Regenerate the last assistant response */
