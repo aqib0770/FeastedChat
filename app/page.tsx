@@ -159,21 +159,28 @@ export default function Home() {
     <SidebarProvider defaultOpen={true} className="h-svh overflow-hidden flex-col">
       <Header />
 
-      <div className="flex flex-1 min-h-0">
+      <div className="flex flex-1 min-h-0 gap-x-4">
         <AppSidebar
           conversations={conversations}
           activeConversationId={activeConversationId ?? conversationId}
           onSelectConversation={handleSelectConversation}
           onNewConversation={handleNewConversation}
           onDeleteConversation={handleDeleteConversation}
-          className="top-16! h-[calc(100svh-4rem)]!"
+          className="top-14! h-[calc(100svh-3.5rem)]!"
         />
 
         <SidebarInset className="flex flex-col h-full overflow-hidden">
           {/* Top Control Bar */}
-          <div className="flex items-center justify-between px-6 py-3 bg-muted/20 border-b border-border/80 gap-3 shrink-0 overflow-x-auto no-scrollbar">
-            <div className="flex items-center gap-3 shrink min-w-0">
+          <div className="flex items-center justify-between px-6 pt-4 pb-2 bg-transparent gap-4 shrink-0 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-4 shrink min-w-0">
               <Toolbar selectedModelIds={selectedModelIds} onToggleModel={toggleModel} />
+              {turns.length > 0 && (
+                <QuestionCards
+                  turns={turns}
+                  focusedTurnIndex={focusedTurnIndex}
+                  onSelectTurn={focusTurn}
+                />
+              )}
             </div>
             <div className="flex items-center gap-2 shrink-0 ml-auto">
               <ModelFilter
@@ -184,15 +191,6 @@ export default function Home() {
               {turns.length > 0 && <ModeToggle mode={viewMode} onModeChange={setViewMode} />}
             </div>
           </div>
-
-          {/* Question Cards navigation strip (shown when there are turns) */}
-          {turns.length > 0 && (
-            <QuestionCards
-              turns={turns}
-              focusedTurnIndex={focusedTurnIndex}
-              onSelectTurn={focusTurn}
-            />
-          )}
 
           {/* Main content */}
           <div className="flex-1 overflow-auto">
@@ -238,6 +236,7 @@ export default function Home() {
                         focusedTurnIndex={focusedTurnIndex}
                         turns={turns}
                         useMemory={useMemory}
+                        documents={documents}
                       />
                     );
                   })}
