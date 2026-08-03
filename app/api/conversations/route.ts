@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireSessionKey } from '@/lib/session';
 import { getDb, COLLECTIONS } from '@/lib/db';
+import { attachUnassignedDocuments } from '@/lib/rag';
 
 export async function GET() {
   try {
@@ -50,9 +51,13 @@ export async function POST(req: Request) {
 
     const result = await db.collection(COLLECTIONS.conversations).insertOne(doc);
 
+    const conversationId = result.insertedId.toString();
+
+    await attachUnassignedDocuments(sessionKey, conversationId);
+
     return NextResponse.json(
       {
-        id: result.insertedId.toString(),
+        id: conversationId,
         title: doc.title,
         activeModelIds: doc.activeModelIds,
         updatedAt: doc.updatedAt.toISOString(),
