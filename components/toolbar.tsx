@@ -15,10 +15,11 @@ export function Toolbar({
       {/* Model Selection Group */}
       <ModelSelector selectedModelIds={selectedModelIds} onToggleModel={onToggleModel} />
       <Badge
-        variant="secondary"
-        className="h-10 px-3 text-xs font-semibold rounded-lg bg-secondary text-secondary-foreground border border-border/50 flex items-center justify-center shrink-0"
+        variant="outline"
+        className="h-9 px-3 text-xs font-semibold rounded-xl bg-muted/40 text-foreground border border-border/80 flex items-center justify-center gap-2 shrink-0"
       >
-        {selectedModelIds.length} active
+        <span className="h-2 w-2 rounded-full bg-[#9eff00]" />
+        <span>{selectedModelIds.length} Active</span>
       </Badge>
     </div>
   );
