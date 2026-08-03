@@ -24,10 +24,10 @@ export function ModelSelector({
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="default" className="h-10 px-3.5 text-sm font-semibold gap-2 shadow-xs" />
+          <Button className="h-9 px-3.5 text-xs font-semibold gap-1.5 rounded-xl bg-[#9eff00] text-black hover:bg-[#8de000] shadow-xs" />
         }
       >
-        <Plus className="h-4.5 w-4.5" />
+        <Plus className="h-4 w-4" />
         <span>Add Model</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-[260px] p-1.5">
