@@ -42,8 +42,6 @@ interface ChatPanelProps {
   focusedTurnIndex?: number | null;
   /** All turns in the conversation for snapshot rendering */
   turns?: StoredTurn[];
-  /** Enable RAG context injection */
-  useRag?: boolean;
   /** Enable mem0 memory layer */
   useMemory?: boolean;
 }
@@ -72,19 +70,13 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
       chatId,
       focusedTurnIndex = null,
       turns = [],
-      useRag = false,
       useMemory = false,
     },
     ref
   ) => {
     // Track persistence IDs for the current stream
     const persistenceRef = useRef<PersistenceIds | null>(null);
-    const useRagRef = useRef(useRag);
     const useMemoryRef = useRef(useMemory);
-
-    useEffect(() => {
-      useRagRef.current = useRag;
-    }, [useRag]);
 
     useEffect(() => {
       useMemoryRef.current = useMemory;
@@ -97,7 +89,6 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
         api: '/api/chat',
         body: () => ({
           model: modelConfig.gatewayId,
-          useRag: useRagRef.current,
           useMemory: useMemoryRef.current,
           ...(persistenceRef.current ?? {}),
         }),
