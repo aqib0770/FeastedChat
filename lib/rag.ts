@@ -141,6 +141,39 @@ ${context}
 ---`;
 }
 
+export async function attachUnassignedDocuments(
+  sessionKey: string,
+  conversationId: string
+): Promise<void> {
+  const db = await getDb();
+
+  const docs = await db
+    .collection(COLLECTIONS.documents)
+    .find({ sessionKey, conversationId: null as never })
+    .toArray();
+
+  if (docs.length === 0) return;
+
+  const documentIds = docs.map((d) => d._id.toString());
+
+  await db
+    .collection(COLLECTIONS.documents)
+    .updateMany({ sessionKey, conversationId: null as never }, { $set: { conversationId } });
+
+  try {
+    await ensureCollection();
+    const qdrant = getQdrantClient();
+    await qdrant.setPayload(QDRANT_COLLECTION, {
+      payload: { conversationId },
+      filter: {
+        must: [{ key: 'documentId', match: { any: documentIds } }],
+      },
+    });
+  } catch (err) {
+    console.warn('[rag] Failed to update Qdrant payload for unassigned documents:', err);
+  }
+}
+
 export async function deleteDocument(documentId: string, sessionKey: string): Promise<void> {
   const db = await getDb();
   const objectId = new ObjectId(documentId);
