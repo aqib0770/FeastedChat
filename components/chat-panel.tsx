@@ -18,7 +18,7 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/comp
 import { Message } from '@/components/message';
 import type { ModelConfig, ChatPanelRef } from '@/types';
 import type { StoredTurn } from '@/lib/conversation-utils';
-import { Square, RotateCcw, Copy, Check, Trash2, AlertCircle, X, Info } from 'lucide-react';
+import { Square, AlertCircle, X, Info } from 'lucide-react';
 
 /** Persistence IDs passed alongside each message send */
 export interface PersistenceIds {
@@ -162,16 +162,24 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
       };
     }, [isStreaming, status]);
 
-    // Copy last assistant message
-    const [isCopied, setIsCopied] = useState(false);
-    const handleCopy = useCallback(() => {
-      const lastAssistantMessage = messages.filter((m) => m.role === 'assistant').pop();
-      if (lastAssistantMessage) {
-        navigator.clipboard.writeText(getMessageText(lastAssistantMessage));
-        setIsCopied(true);
-        setTimeout(() => setIsCopied(false), 2000);
-      }
-    }, [messages]);
+    // Copy a specific assistant message
+    const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+    const handleCopyMessage = useCallback((message: (typeof messages)[number]) => {
+      navigator.clipboard.writeText(getMessageText(message));
+      setCopiedMessageId(message.id);
+      setTimeout(() => setCopiedMessageId((id) => (id === message.id ? null : id)), 2000);
+    }, []);
+
+    // Regenerate a specific assistant message by truncating up to its preceding user message
+    const handleRegenerateMessage = useCallback(
+      (message: (typeof messages)[number]) => {
+        const index = messages.findIndex((m) => m.id === message.id);
+        if (index <= 0) return;
+        setMessages(messages.slice(0, index));
+        regenerate();
+      },
+      [messages, setMessages, regenerate]
+    );
 
     // Auto-scroll
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -212,6 +220,10 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
     const snapshotAssistantText =
       snapshotResponse?.content || (liveAssistantMsg ? getMessageText(liveAssistantMsg) : '');
 
+    const snapshotLiveId =
+      liveAssistantMsg?.id ??
+      (snapshotTurn ? `snapshot-${snapshotTurn.turnIndex}-${modelConfig.id}` : '');
+
     return (
       <Card className="flex flex-col h-full min-h-[520px] overflow-hidden border-2 border-border/80 rounded-2xl shadow-xs bg-card">
         <CardHeader className="flex-none py-3.5 px-5 border-b border-border/80 bg-muted/30 space-y-0">
@@ -231,6 +243,23 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
                 )}
               </div>
               <div className="flex items-center gap-2">
+                {isStreaming && (
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8 rounded-lg text-destructive border-destructive/30"
+                          onClick={stop}
+                        />
+                      }
+                    >
+                      <Square className="h-4 w-4 fill-current" />
+                    </TooltipTrigger>
+                    <TooltipContent>Stop generating</TooltipContent>
+                  </Tooltip>
+                )}
                 {isStreaming && (
                   <div className="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse" />
                 )}
@@ -258,85 +287,6 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-1.5 mt-2.5">
-              {isStreaming && (
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 rounded-lg text-destructive border-destructive/30"
-                        onClick={stop}
-                      />
-                    }
-                  >
-                    <Square className="h-4 w-4 fill-current" />
-                  </TooltipTrigger>
-                  <TooltipContent>Stop generating</TooltipContent>
-                </Tooltip>
-              )}
-
-              {!isStreaming && messages.length > 0 && !isSnapshotMode && (
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 rounded-lg"
-                        onClick={() => regenerate()}
-                      />
-                    }
-                  >
-                    <RotateCcw className="h-4 w-4" />
-                  </TooltipTrigger>
-                  <TooltipContent>Regenerate response</TooltipContent>
-                </Tooltip>
-              )}
-
-              {messages.length > 0 && (
-                <>
-                  <Tooltip>
-                    <TooltipTrigger
-                      render={
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8 rounded-lg"
-                          onClick={handleCopy}
-                        />
-                      }
-                    >
-                      {isCopied ? (
-                        <Check className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </TooltipTrigger>
-                    <TooltipContent>Copy response</TooltipContent>
-                  </Tooltip>
-
-                  {!isSnapshotMode && (
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 rounded-lg hover:text-destructive hover:border-destructive/30"
-                            onClick={() => setMessages([])}
-                          />
-                        }
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </TooltipTrigger>
-                      <TooltipContent>Clear messages</TooltipContent>
-                    </Tooltip>
-                  )}
-                </>
-              )}
-            </div>
           </TooltipProvider>
         </CardHeader>
 
@@ -353,6 +303,13 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
                       isStreaming={
                         isStreaming && focusedTurnIndex === Math.floor((messages.length - 1) / 2)
                       }
+                      showActions
+                      isCopied={copiedMessageId === snapshotLiveId}
+                      onCopy={() => {
+                        navigator.clipboard.writeText(snapshotAssistantText);
+                        setCopiedMessageId(snapshotLiveId);
+                        setTimeout(() => setCopiedMessageId(null), 2000);
+                      }}
                     />
                   </>
                 ) : (
@@ -374,6 +331,14 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
                       isStreaming &&
                       message.id === messages[messages.length - 1]?.id &&
                       message.role === 'assistant'
+                    }
+                    showActions={message.role === 'assistant'}
+                    isCopied={copiedMessageId === message.id}
+                    onCopy={() => handleCopyMessage(message)}
+                    onRegenerate={
+                      !isSnapshotMode && message.role === 'assistant'
+                        ? () => handleRegenerateMessage(message)
+                        : undefined
                     }
                   />
                 ))
