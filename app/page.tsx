@@ -287,6 +287,7 @@ export default function Home() {
           onSend={handleSend}
           isAnyStreaming={streamingState}
           disabled={selectedModelIds.length === 0}
+          isUploading={isUploading}
         />
 
         {/* Floating Error Toast Notification */}
