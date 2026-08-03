@@ -1,14 +1,5 @@
 import type { Metadata } from 'next';
-import {
-  Geist,
-  Geist_Mono,
-  Inter,
-  IBM_Plex_Sans,
-  Merriweather,
-  Roboto_Slab,
-  Public_Sans,
-  Space_Grotesk,
-} from 'next/font/google';
+import { Geist, Geist_Mono, IBM_Plex_Sans, Roboto_Slab, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { TooltipProvider } from '@/components/ui/tooltip';

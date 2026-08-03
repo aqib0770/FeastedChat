@@ -1,7 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { AlertCircle, X, Eye } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AlertCircle, X } from 'lucide-react';
 import { Header } from '@/components/header';
 import { Toolbar } from '@/components/toolbar';
 import { DocumentPanel } from '@/components/document-panel';
@@ -157,19 +157,20 @@ export default function Home() {
     [deleteConversation, activeConversationId, startNewConversation]
   );
 
-  // Create stable ref callbacks for each model
-  const refCallbacksRef = useRef<Map<string, (ref: ChatPanelRef | null) => void>>(new Map());
-  const getRefCallback = useCallback(
-    (modelId: string) => {
-      if (!refCallbacksRef.current.has(modelId)) {
-        refCallbacksRef.current.set(modelId, (ref: ChatPanelRef | null) => {
-          registerPanel(modelId, ref);
-        });
-      }
-      return refCallbacksRef.current.get(modelId)!;
-    },
-    [registerPanel]
-  );
+  // Create stable ref callbacks for each model (memoized so refs survive re-renders)
+  const refCallbacks = useMemo(() => {
+    const map = new Map<string, (ref: ChatPanelRef | null) => void>();
+    return {
+      get(modelId: string) {
+        let cb = map.get(modelId);
+        if (!cb) {
+          cb = (ref) => registerPanel(modelId, ref);
+          map.set(modelId, cb);
+        }
+        return cb;
+      },
+    };
+  }, [registerPanel]);
 
   // Stable panel key prefix
   const panelKeyPrefix = conversationId ?? 'new';
@@ -258,7 +259,7 @@ export default function Home() {
                   return (
                     <ChatPanel
                       key={`${panelKeyPrefix}:${modelId}`}
-                      ref={getRefCallback(modelId)}
+                      ref={refCallbacks.get(modelId)}
                       modelConfig={config}
                       onRemove={
                         !modelFilter && selectedModelIds.includes(modelId)
