@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertCircle, X } from 'lucide-react';
 import { Header } from '@/components/header';
 import { Toolbar } from '@/components/toolbar';
-import { DocumentPanel } from '@/components/document-panel';
 import { PromptInput } from '@/components/prompt-input';
 import { ChatPanel } from '@/components/chat-panel';
 import { AppSidebar } from '@/components/sidebar';
@@ -198,7 +197,6 @@ export default function Home() {
               onStopAll={handleStopAll}
               onClearAll={handleClearAll}
             />
-            <DocumentPanel useMemory={useMemory} onToggleMemory={() => setUseMemory((v) => !v)} />
           </div>
           <div className="flex items-center gap-2 bg-card border border-border/80 rounded-xl p-1.5 shadow-xs shrink-0 ml-auto">
             <ModelFilter
@@ -280,6 +278,8 @@ export default function Home() {
           onUpload={handleUpload}
           documents={documents}
           onDeleteDocument={deleteDocument}
+          useMemory={useMemory}
+          onToggleMemory={() => setUseMemory((v) => !v)}
         />
 
         {/* Floating Error Toast Notification */}
