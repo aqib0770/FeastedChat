@@ -64,7 +64,7 @@ export function Message({
                   }
                 >
                   {isCopied ? (
-                    <Check className="h-4 w-4 text-green-500" />
+                    <Check className="h-4 w-4 text-primary" />
                   ) : (
                     <Copy className="h-4 w-4" />
                   )}
