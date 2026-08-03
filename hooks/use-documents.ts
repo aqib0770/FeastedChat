@@ -76,10 +76,14 @@ export function useDocuments(conversationId?: string | null) {
     }
   }, []);
 
-  const readyDocuments = documents.filter((d) => d.status === 'ready');
+  const visibleDocuments = conversationId
+    ? documents.filter((d) => d.conversationId === conversationId)
+    : documents.filter((d) => !d.conversationId);
+
+  const readyDocuments = visibleDocuments.filter((d) => d.status === 'ready');
 
   return {
-    documents,
+    documents: visibleDocuments,
     readyDocuments,
     isLoading,
     isUploading,
