@@ -3,6 +3,23 @@ import { requireSessionKey, assertConversationAccess } from '@/lib/session';
 import { getDb, COLLECTIONS } from '@/lib/db';
 import { ObjectId } from 'mongodb';
 
+interface FormattedTurnResponse {
+  id: string;
+  turnId: string;
+  modelId: string;
+  gatewayId: string;
+  content: string;
+  status: string;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+interface PatchConversationBody {
+  title?: string;
+  activeModelIds?: string[];
+}
+
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
@@ -45,7 +62,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         });
         return acc;
       },
-      {} as Record<string, any[]>
+      {} as Record<string, FormattedTurnResponse[]>
     );
 
     const formattedTurns = turns.map((turn) => ({
@@ -82,8 +99,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     const sessionKey = await requireSessionKey();
     await assertConversationAccess(id, sessionKey);
 
-    const body = await req.json();
-    const updateFields: any = { updatedAt: new Date() };
+    const body = (await req.json()) as Partial<PatchConversationBody>;
+    const updateFields: Partial<PatchConversationBody & { updatedAt: Date }> = {
+      updatedAt: new Date(),
+    };
 
     if (body.title !== undefined) updateFields.title = body.title;
     if (body.activeModelIds !== undefined) updateFields.activeModelIds = body.activeModelIds;
