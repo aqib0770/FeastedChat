@@ -173,10 +173,7 @@ export default function Home() {
           {/* Top Control Bar */}
           <div className="flex items-center justify-between px-6 py-3 bg-muted/20 border-b border-border/80 gap-3 shrink-0 overflow-x-auto no-scrollbar">
             <div className="flex items-center gap-3 shrink min-w-0">
-              <Toolbar
-                selectedModelIds={selectedModelIds}
-                onToggleModel={toggleModel}
-              />
+              <Toolbar selectedModelIds={selectedModelIds} onToggleModel={toggleModel} />
             </div>
             <div className="flex items-center gap-2 shrink-0 ml-auto">
               <ModelFilter
