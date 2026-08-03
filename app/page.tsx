@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AlertCircle, X } from 'lucide-react';
+import { AlertCircle, X, Eye } from 'lucide-react';
 import { Header } from '@/components/header';
 import { Toolbar } from '@/components/toolbar';
 import { DocumentPanel } from '@/components/document-panel';
@@ -190,9 +190,9 @@ export default function Home() {
       <SidebarInset className="flex flex-col h-screen overflow-hidden">
         <Header />
 
-        {/* Toolbar with mode toggle and model filter */}
-        <div className="flex items-center justify-between px-4 py-2 border-b gap-2">
-          <div className="flex items-center gap-2">
+        {/* Top Control Bar */}
+        <div className="flex items-center justify-between px-6 py-3 bg-muted/20 border-b border-border/80 gap-3 shrink-0 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-3 shrink min-w-0">
             <Toolbar
               selectedModelIds={selectedModelIds}
               onToggleModel={toggleModel}
@@ -201,16 +201,13 @@ export default function Home() {
             />
             <DocumentPanel
               documents={documents}
-              isUploading={isUploading}
               useRag={useRag}
               onToggleRag={() => setUseRag((v) => !v)}
               useMemory={useMemory}
               onToggleMemory={() => setUseMemory((v) => !v)}
-              onUpload={handleUpload}
-              onDelete={deleteDocument}
             />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 bg-card border border-border/80 rounded-xl p-1.5 shadow-xs shrink-0 ml-auto">
             <ModelFilter
               availableModelIds={participatingModelIds}
               selectedModelId={modelFilter}
@@ -282,12 +279,15 @@ export default function Home() {
           )}
         </div>
 
-        {/* Shared Prompt Input */}
+        {/* Shared Prompt Input with PDF upload button & document attachments */}
         <PromptInput
           onSend={handleSend}
           isAnyStreaming={streamingState}
           disabled={selectedModelIds.length === 0}
           isUploading={isUploading}
+          onUpload={handleUpload}
+          documents={documents}
+          onDeleteDocument={deleteDocument}
         />
 
         {/* Floating Error Toast Notification */}

@@ -1,4 +1,5 @@
 'use client';
+
 import React from 'react';
 import { Streamdown } from 'streamdown';
 import { CodeBlock } from './code-block';
@@ -13,7 +14,7 @@ export const MarkdownRenderer = React.memo(function MarkdownRenderer({
   isStreaming = false,
 }: MarkdownRendererProps) {
   return (
-    <div className="prose prose-sm prose-invert max-w-none">
+    <div className="prose prose-base dark:prose-invert max-w-none text-base leading-relaxed">
       <Streamdown
         isAnimating={isStreaming}
         controls={{ code: false }}
@@ -28,7 +29,7 @@ export const MarkdownRenderer = React.memo(function MarkdownRenderer({
             if (isInline) {
               return (
                 <code
-                  className="rounded bg-muted/80 px-1.5 py-0.5 font-mono text-xs text-foreground border border-border/40"
+                  className="rounded-md bg-muted px-2 py-0.5 font-mono text-sm text-foreground border border-border/50"
                   {...props}
                 >
                   {children}

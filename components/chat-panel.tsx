@@ -223,25 +223,29 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
       snapshotResponse?.content || (liveAssistantMsg ? getMessageText(liveAssistantMsg) : '');
 
     return (
-      <Card className="flex flex-col h-full min-h-[500px] overflow-hidden">
-        <CardHeader className="flex-none py-3 px-4 border-b space-y-0">
+      <Card className="flex flex-col h-full min-h-[520px] overflow-hidden border-2 border-border/80 rounded-2xl shadow-xs bg-card">
+        <CardHeader className="flex-none py-3.5 px-5 border-b border-border/80 bg-muted/30 space-y-0">
           <TooltipProvider>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-sm">{modelConfig.name}</h3>
-                <Badge variant="outline" className="text-xs">
+              <div className="flex items-center gap-2.5">
+                <h3 className="font-bold text-base sm:text-lg text-foreground tracking-tight">
+                  {modelConfig.name}
+                </h3>
+                <Badge variant="outline" className="text-xs px-2.5 py-0.5 font-semibold rounded-md">
                   {modelConfig.provider}
                 </Badge>
                 {isSnapshotMode && (
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
+                  <Badge variant="secondary" className="text-xs px-2 py-0.5 font-bold rounded-md">
                     Turn {focusedTurnIndex + 1}
                   </Badge>
                 )}
               </div>
               <div className="flex items-center gap-2">
-                {isStreaming && <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />}
+                {isStreaming && (
+                  <div className="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse" />
+                )}
                 {(elapsedMs > 0 || isStreaming) && (
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md border">
                     {(elapsedMs / 1000).toFixed(1)}s
                   </span>
                 )}
@@ -252,27 +256,32 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg"
                           onClick={onRemove}
                         />
                       }
                     >
-                      <X className="h-4 w-4" />
+                      <X className="h-4.5 w-4.5" />
                     </TooltipTrigger>
                     <TooltipContent>Remove panel</TooltipContent>
                   </Tooltip>
                 )}
               </div>
             </div>
-            <div className="flex gap-1 mt-2">
+            <div className="flex items-center gap-1.5 mt-2.5">
               {isStreaming && (
                 <Tooltip>
                   <TooltipTrigger
                     render={
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={stop} />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 rounded-lg text-destructive border-destructive/30"
+                        onClick={stop}
+                      />
                     }
                   >
-                    <Square className="h-3.5 w-3.5" />
+                    <Square className="h-4 w-4 fill-current" />
                   </TooltipTrigger>
                   <TooltipContent>Stop generating</TooltipContent>
                 </Tooltip>
@@ -283,14 +292,14 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
                   <TooltipTrigger
                     render={
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="icon"
-                        className="h-7 w-7"
+                        className="h-8 w-8 rounded-lg"
                         onClick={() => regenerate()}
                       />
                     }
                   >
-                    <RotateCcw className="h-3.5 w-3.5" />
+                    <RotateCcw className="h-4 w-4" />
                   </TooltipTrigger>
                   <TooltipContent>Regenerate response</TooltipContent>
                 </Tooltip>
@@ -302,17 +311,17 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
                     <TooltipTrigger
                       render={
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="icon"
-                          className="h-7 w-7"
+                          className="h-8 w-8 rounded-lg"
                           onClick={handleCopy}
                         />
                       }
                     >
                       {isCopied ? (
-                        <Check className="h-3.5 w-3.5 text-green-500" />
+                        <Check className="h-4 w-4 text-green-500" />
                       ) : (
-                        <Copy className="h-3.5 w-3.5" />
+                        <Copy className="h-4 w-4" />
                       )}
                     </TooltipTrigger>
                     <TooltipContent>Copy response</TooltipContent>
@@ -323,14 +332,14 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
                       <TooltipTrigger
                         render={
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="icon"
-                            className="h-7 w-7"
+                            className="h-8 w-8 rounded-lg hover:text-destructive hover:border-destructive/30"
                             onClick={() => setMessages([])}
                           />
                         }
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <Trash2 className="h-4 w-4" />
                       </TooltipTrigger>
                       <TooltipContent>Clear messages</TooltipContent>
                     </Tooltip>
@@ -343,7 +352,7 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
 
         <CardContent className="flex-1 overflow-hidden p-0 relative">
           <ScrollArea className="h-full">
-            <div className="flex flex-col gap-4 p-4 min-w-0">
+            <div className="flex flex-col gap-5 p-5 min-w-0">
               {isSnapshotMode ? (
                 isModelActive ? (
                   <>

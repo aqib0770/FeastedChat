@@ -77,22 +77,24 @@ export function AppSidebar({
   const grouped = groupConversations(conversations);
 
   return (
-    <Sidebar collapsible="offcanvas" className="border-r">
-      <SidebarHeader className="p-3">
+    <Sidebar collapsible="offcanvas" className="border-r bg-sidebar">
+      <SidebarHeader className="p-4 border-b border-border/60">
         <Button
           onClick={onNewConversation}
-          className="w-full justify-start gap-2"
+          className="w-full justify-start gap-2.5 h-11 text-base font-bold rounded-xl shadow-xs"
           variant="default"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-5 w-5" />
           <span>New Conversation</span>
         </Button>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="p-2">
         {grouped.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80 px-3 py-2.5">
+              {group.label}
+            </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((conv) => {
@@ -102,19 +104,26 @@ export function AppSidebar({
                       <SidebarMenuButton
                         isActive={isActive}
                         onClick={() => onSelectConversation(conv.id)}
-                        className="h-auto py-2.5 px-3 flex flex-col items-start gap-1"
+                        className={`h-auto py-3 px-3.5 flex flex-col items-start gap-1.5 rounded-xl transition-all ${
+                          isActive
+                            ? 'bg-accent text-accent-foreground font-semibold border border-border/80 shadow-xs'
+                            : ''
+                        }`}
                       >
                         <div className="flex items-center justify-between w-full gap-2">
-                          <div className="flex items-center gap-2 overflow-hidden min-w-0">
-                            <MessageSquare className="h-4 w-4 shrink-0 text-muted-foreground" />
-                            <span className="font-medium text-sm truncate">
+                          <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
+                            <MessageSquare className="h-4.5 w-4.5 shrink-0 text-muted-foreground" />
+                            <span className="font-semibold text-base truncate">
                               {conv.title || 'Untitled Conversation'}
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between w-full text-xs text-muted-foreground pl-6">
+                        <div className="flex items-center justify-between w-full text-xs text-muted-foreground pl-7 font-medium">
                           <span>{getRelativeTime(conv.updatedAt)}</span>
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
+                          <Badge
+                            variant="outline"
+                            className="text-[10px] px-1.5 py-0 h-4.5 font-medium"
+                          >
                             {conv.activeModelIds.length} model
                             {conv.activeModelIds.length !== 1 ? 's' : ''}
                           </Badge>
@@ -126,9 +135,9 @@ export function AppSidebar({
                           e.stopPropagation();
                           onDeleteConversation(conv.id);
                         }}
-                        className="text-muted-foreground hover:text-destructive"
+                        className="text-muted-foreground hover:text-destructive h-8 w-8 rounded-lg"
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <Trash2 className="h-4 w-4" />
                         <span className="sr-only">Delete</span>
                       </SidebarMenuAction>
                     </SidebarMenuItem>
@@ -140,7 +149,9 @@ export function AppSidebar({
         ))}
 
         {grouped.length === 0 && (
-          <div className="p-4 text-center text-sm text-muted-foreground">No conversations yet</div>
+          <div className="p-6 text-center text-base font-medium text-muted-foreground">
+            No conversations yet
+          </div>
         )}
       </SidebarContent>
     </Sidebar>
