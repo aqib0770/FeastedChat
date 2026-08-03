@@ -1,9 +1,17 @@
 'use client';
 
 import { useState, useCallback, useRef, type KeyboardEvent } from 'react';
-import { ArrowUp, Paperclip, Loader2, FileText, Trash2, AlertCircle, Brain } from 'lucide-react';
+import {
+  ArrowUp,
+  Paperclip,
+  Loader2,
+  FileText,
+  Trash2,
+  AlertCircle,
+  Brain,
+  Info,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { StoredDocument } from '@/types';
@@ -68,11 +76,11 @@ export function PromptInput({
   );
 
   return (
-    <div className="sticky bottom-0 p-4 sm:p-6 bg-background border-t border-border/80 shadow-md shrink-0">
-      <div className="bg-card border-2 border-border/80 rounded-2xl p-3 sm:p-3.5 flex flex-col gap-2 shadow-xs focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-        {/* Attached PDF Chips Strip (ChatGPT style) */}
+    <div className="sticky bottom-0 px-6 pb-4 pt-2 bg-background shrink-0 flex flex-col w-full z-20">
+      <div className="bg-card border border-border/80 rounded-2xl p-2 flex flex-col gap-2 shadow-xs focus-within:border-border/100 transition-all w-full">
+        {/* Attached PDF Chips Strip */}
         {documents && documents.length > 0 && onDeleteDocument && (
-          <div className="flex items-center gap-2 px-1 pb-2 border-b border-border/60 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-2 px-2 pb-2 border-b border-border/60 overflow-x-auto no-scrollbar">
             <span className="text-xs font-semibold text-muted-foreground shrink-0 flex items-center gap-1">
               <FileText className="h-3.5 w-3.5" />
               Attached:
@@ -83,7 +91,7 @@ export function PromptInput({
           </div>
         )}
 
-        <div className="flex items-end gap-2.5">
+        <div className="flex items-center gap-2 w-full">
           {/* Upload PDF attachment button */}
           {onUpload && (
             <>
@@ -99,18 +107,18 @@ export function PromptInput({
                   <TooltipTrigger
                     render={
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="icon"
-                        className="rounded-xl h-11 w-11 shrink-0 mb-0.5 border-border/80 hover:bg-muted text-muted-foreground hover:text-foreground"
+                        className="rounded-xl h-9 w-9 shrink-0 text-muted-foreground hover:text-foreground hover:bg-muted/50 border-0"
                         disabled={disabled || isUploading}
                         onClick={() => fileInputRef.current?.click()}
                       />
                     }
                   >
                     {isUploading ? (
-                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                      <Loader2 className="h-4.5 w-4.5 animate-spin text-primary" />
                     ) : (
-                      <Paperclip className="h-5 w-5" />
+                      <Paperclip className="h-4.5 w-4.5" />
                     )}
                   </TooltipTrigger>
                   <TooltipContent>Attach PDF for RAG context</TooltipContent>
@@ -119,8 +127,8 @@ export function PromptInput({
             </>
           )}
 
-          <div className="relative flex-1 min-h-[52px]">
-            <Textarea
+          <div className="relative flex-1 flex items-center min-h-[38px]">
+            <textarea
               value={value}
               onChange={(e) => setValue(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -133,65 +141,67 @@ export function PromptInput({
               }
               disabled={disabled || isUploading}
               rows={1}
-              className="border-0 shadow-none resize-none focus-visible:ring-0 min-h-[52px] max-h-[220px] p-2.5 pr-36 text-base sm:text-lg leading-relaxed w-full placeholder:text-base text-foreground"
+              className="bg-transparent border-0 outline-none shadow-none resize-none focus:outline-none focus:ring-0 focus-visible:ring-0 min-h-[38px] max-h-[160px] py-1.5 px-1 text-sm leading-relaxed w-full placeholder:text-muted-foreground/60 text-foreground"
             />
-
-            {onToggleMemory && (
-              <div className="absolute bottom-1.5 right-1.5">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger
-                      render={
-                        <Button
-                          variant="ghost"
-                          aria-pressed={useMemory}
-                          className="h-11 shrink-0 px-3 gap-2 rounded-xl border-0 bg-transparent hover:bg-transparent"
-                          onClick={onToggleMemory}
-                        >
-                          <Brain
-                            className={`h-4.5 w-4.5 ${
-                              useMemory ? 'text-primary' : 'text-muted-foreground'
-                            }`}
-                          />
-                          <span className="text-sm font-medium">Memory</span>
-                          <span
-                            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                              useMemory ? 'bg-primary' : 'bg-muted border border-border/80'
-                            }`}
-                          >
-                            <span
-                              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-                                useMemory ? 'translate-x-[18px]' : 'translate-x-[2px]'
-                              }`}
-                            />
-                          </span>
-                        </Button>
-                      }
-                    >
-                      Memory
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {useMemory
-                        ? 'Memory enabled — retains user context and facts'
-                        : 'Enable memory to retain context across messages'}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            )}
           </div>
 
-          <Button
-            size="icon"
-            className="rounded-xl h-11 w-11 shrink-0 font-semibold shadow-xs mb-0.5"
-            onClick={handleSend}
-            disabled={isButtonDisabled}
-            suppressHydrationWarning
-          >
-            <ArrowUp className="h-5 w-5" />
-            <span className="sr-only">Send</span>
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            {onToggleMemory && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        aria-pressed={useMemory}
+                        className="h-9 shrink-0 px-2 gap-2 rounded-xl border-0 bg-transparent hover:bg-transparent text-muted-foreground hover:text-foreground"
+                        onClick={onToggleMemory}
+                      >
+                        <Brain
+                          className={`h-4 w-4 ${useMemory ? 'text-[#9eff00]' : 'text-muted-foreground'}`}
+                        />
+                        <span className="text-xs font-semibold">Memory</span>
+                        <span
+                          className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors ${
+                            useMemory ? 'bg-[#9eff00]' : 'bg-muted border border-border/80'
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
+                              useMemory ? 'translate-x-[15px]' : 'translate-x-[1px]'
+                            }`}
+                          />
+                        </span>
+                      </Button>
+                    }
+                  >
+                    Memory
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {useMemory
+                      ? 'Memory enabled — retains user context and facts'
+                      : 'Enable memory to retain context across messages'}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+
+            <Button
+              size="icon"
+              className="rounded-xl h-9 w-9 shrink-0 font-semibold bg-[#9eff00] text-black hover:bg-[#8de000] border-0 shadow-none"
+              onClick={handleSend}
+              disabled={isButtonDisabled}
+              suppressHydrationWarning
+            >
+              <ArrowUp className="h-4.5 w-4.5 text-black font-bold" />
+              <span className="sr-only">Send</span>
+            </Button>
+          </div>
         </div>
+      </div>
+      <div className="text-[10px] sm:text-xs text-muted-foreground/65 mt-2 flex items-center justify-center gap-1 font-medium">
+        <span>Responses from all active models appear here for easy comparison</span>
+        <Info className="h-3.5 w-3.5 text-muted-foreground/80" />
       </div>
     </div>
   );
