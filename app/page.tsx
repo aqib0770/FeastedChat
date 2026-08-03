@@ -56,7 +56,6 @@ export default function Home() {
 
   // Track streaming state reactively for the UI
   const [streamingState, setStreamingState] = useState(false);
-  const [useRag, setUseRag] = useState(false);
   const [useMemory, setUseMemory] = useState(true);
 
   const activeConvId = activeConversationId ?? conversationId;
@@ -65,7 +64,6 @@ export default function Home() {
   const handleUpload = useCallback(
     async (file: File) => {
       await uploadDocument(file);
-      setUseRag(true);
     },
     [uploadDocument]
   );
@@ -200,13 +198,7 @@ export default function Home() {
               onStopAll={handleStopAll}
               onClearAll={handleClearAll}
             />
-            <DocumentPanel
-              documents={documents}
-              useRag={useRag}
-              onToggleRag={() => setUseRag((v) => !v)}
-              useMemory={useMemory}
-              onToggleMemory={() => setUseMemory((v) => !v)}
-            />
+            <DocumentPanel useMemory={useMemory} onToggleMemory={() => setUseMemory((v) => !v)} />
           </div>
           <div className="flex items-center gap-2 bg-card border border-border/80 rounded-xl p-1.5 shadow-xs shrink-0 ml-auto">
             <ModelFilter
@@ -270,7 +262,6 @@ export default function Home() {
                       chatId={`${panelKeyPrefix}:${modelId}`}
                       focusedTurnIndex={focusedTurnIndex}
                       turns={turns}
-                      useRag={useRag}
                       useMemory={useMemory}
                     />
                   );
