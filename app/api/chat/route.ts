@@ -39,7 +39,6 @@ export async function POST(req: Request) {
       conversationId,
       turnId,
       responseId,
-      useRag,
       useMemory,
       documentIds,
     }: {
@@ -48,7 +47,6 @@ export async function POST(req: Request) {
       conversationId?: string;
       turnId?: string;
       responseId?: string;
-      useRag?: boolean;
       useMemory?: boolean;
       documentIds?: string[];
     } = body;
@@ -74,19 +72,17 @@ export async function POST(req: Request) {
       }
     }
 
-    // RAG: retrieve relevant context when enabled
+    // RAG: retrieve relevant context from uploaded documents when available
     let systemPrompt: string | undefined;
-    if (useRag) {
-      try {
-        const sessionKey = await requireSessionKey();
-        const query = getLatestUserText(messages);
-        if (query) {
-          const chunks = await retrieveContext(query, sessionKey, conversationId, documentIds);
-          systemPrompt = buildRagSystemPrompt(chunks) || undefined;
-        }
-      } catch (err) {
-        console.warn('[/api/chat] RAG retrieval failed, continuing without context:', err);
+    try {
+      const sessionKey = await requireSessionKey();
+      const query = getLatestUserText(messages);
+      if (query) {
+        const chunks = await retrieveContext(query, sessionKey, conversationId, documentIds);
+        systemPrompt = buildRagSystemPrompt(chunks) || undefined;
       }
+    } catch (err) {
+      console.warn('[/api/chat] RAG retrieval failed, continuing without context:', err);
     }
 
     // Memory: retrieve relevant LTM and STM memories when enabled
