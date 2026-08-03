@@ -66,7 +66,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       });
     }
 
-    const updateFields: any = { updatedAt: now };
+    const updateFields: { updatedAt: Date; title?: string } = { updatedAt: now };
     if (turnIndex === 0) {
       updateFields.title = truncateTitle(body.userMessage);
     }
