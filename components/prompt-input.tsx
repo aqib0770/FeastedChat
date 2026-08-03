@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, type KeyboardEvent } from 'react';
-import { ArrowUp, Paperclip, Loader2, FileText, Trash2, AlertCircle } from 'lucide-react';
+import { ArrowUp, Paperclip, Loader2, FileText, Trash2, AlertCircle, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,8 @@ export function PromptInput({
   onUpload,
   documents = [],
   onDeleteDocument,
+  useMemory = false,
+  onToggleMemory,
 }: {
   onSend: (content: string) => void;
   isAnyStreaming: boolean;
@@ -24,6 +26,8 @@ export function PromptInput({
   onUpload?: (file: File) => Promise<void>;
   documents?: StoredDocument[];
   onDeleteDocument?: (id: string) => Promise<void>;
+  useMemory?: boolean;
+  onToggleMemory?: () => void;
 }) {
   const [value, setValue] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -115,21 +119,67 @@ export function PromptInput({
             </>
           )}
 
-          <Textarea
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={
-              isUploading
-                ? 'Uploading PDF document...'
-                : disabled
-                  ? 'Select at least one model to start comparing...'
-                  : 'Send a message to all models...'
-            }
-            disabled={disabled || isUploading}
-            rows={1}
-            className="border-0 shadow-none resize-none focus-visible:ring-0 min-h-[52px] max-h-[220px] p-2.5 text-base sm:text-lg leading-relaxed flex-1 placeholder:text-base text-foreground"
-          />
+          <div className="relative flex-1 min-h-[52px]">
+            <Textarea
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={
+                isUploading
+                  ? 'Uploading PDF document...'
+                  : disabled
+                    ? 'Select at least one model to start comparing...'
+                    : 'Send a message to all models...'
+              }
+              disabled={disabled || isUploading}
+              rows={1}
+              className="border-0 shadow-none resize-none focus-visible:ring-0 min-h-[52px] max-h-[220px] p-2.5 pr-36 text-base sm:text-lg leading-relaxed w-full placeholder:text-base text-foreground"
+            />
+
+            {onToggleMemory && (
+              <div className="absolute bottom-1.5 right-1.5">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          aria-pressed={useMemory}
+                          className="h-11 shrink-0 px-3 gap-2 rounded-xl border-0 bg-transparent hover:bg-transparent"
+                          onClick={onToggleMemory}
+                        >
+                          <Brain
+                            className={`h-4.5 w-4.5 ${
+                              useMemory ? 'text-primary' : 'text-muted-foreground'
+                            }`}
+                          />
+                          <span className="text-sm font-medium">Memory</span>
+                          <span
+                            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                              useMemory ? 'bg-primary' : 'bg-muted border border-border/80'
+                            }`}
+                          >
+                            <span
+                              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                                useMemory ? 'translate-x-[18px]' : 'translate-x-[2px]'
+                              }`}
+                            />
+                          </span>
+                        </Button>
+                      }
+                    >
+                      Memory
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {useMemory
+                        ? 'Memory enabled — retains user context and facts'
+                        : 'Enable memory to retain context across messages'}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            )}
+          </div>
 
           <Button
             size="icon"
