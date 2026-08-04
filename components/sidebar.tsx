@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ConversationSummary } from '@/lib/conversation-utils';
-import { Plus, MessageSquare, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -65,7 +65,7 @@ export function AppSidebar({
 
   return (
     <Sidebar collapsible="offcanvas" className={cn('border-r bg-sidebar', className)}>
-      <SidebarHeader className="p-4 border-b border-border/60">
+      <SidebarHeader className="px-3 py-4 border-b border-border/60">
         <Button
           onClick={onNewConversation}
           className="w-full justify-start gap-2.5 h-11 text-base font-bold rounded-xl shadow-xs"
@@ -79,7 +79,7 @@ export function AppSidebar({
       <SidebarContent className="p-2">
         {grouped.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80 px-3 py-2.5">
+            <SidebarGroupLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80 px-2 py-2.5">
               {group.label}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -91,7 +91,7 @@ export function AppSidebar({
                       <SidebarMenuButton
                         isActive={isActive}
                         onClick={() => onSelectConversation(conv.id)}
-                        className={`gap-2.5 rounded-xl px-3 py-2 ${
+                        className={`gap-2.5 rounded-xl px-2.5 py-2 ${
                           isActive ? 'bg-accent text-accent-foreground border border-border/80' : ''
                         }`}
                       >
