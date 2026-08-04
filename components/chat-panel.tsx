@@ -225,7 +225,7 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
       (snapshotTurn ? `snapshot-${snapshotTurn.turnIndex}-${modelConfig.id}` : '');
 
     return (
-      <Card className="flex flex-col h-full min-h-[520px] overflow-hidden border-2 border-border/80 rounded-2xl shadow-xs bg-card">
+      <Card className="flex flex-col h-full min-h-[520px] overflow-hidden border-1 border-border/80 rounded-2xl shadow-xs bg-card">
         <CardHeader className="flex-none py-3.5 px-5 border-b border-border/80 bg-muted/30 space-y-0">
           <TooltipProvider>
             <div className="flex items-center justify-between">
