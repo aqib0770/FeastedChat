@@ -5,7 +5,6 @@ import { ConversationSummary } from '@/lib/conversation-utils';
 import { Plus, MessageSquare, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Sidebar,
   SidebarHeader,
@@ -26,21 +25,6 @@ interface AppSidebarProps {
   onNewConversation: () => void;
   onDeleteConversation: (id: string) => void;
   className?: string;
-}
-
-function getRelativeTime(dateStr: string): string {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString();
 }
 
 function groupConversations(conversations: ConversationSummary[]) {
@@ -107,30 +91,13 @@ export function AppSidebar({
                       <SidebarMenuButton
                         isActive={isActive}
                         onClick={() => onSelectConversation(conv.id)}
-                        className={`h-auto py-3 px-3.5 flex flex-col items-start gap-1.5 rounded-xl transition-all ${
-                          isActive
-                            ? 'bg-accent text-accent-foreground font-semibold border border-border/80 shadow-xs'
-                            : ''
+                        className={`gap-2.5 rounded-xl px-3 py-2 ${
+                          isActive ? 'bg-accent text-accent-foreground border border-border/80' : ''
                         }`}
                       >
-                        <div className="flex items-center justify-between w-full gap-2">
-                          <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
-                            <MessageSquare className="h-4.5 w-4.5 shrink-0 text-muted-foreground" />
-                            <span className="font-semibold text-base truncate">
-                              {conv.title || 'Untitled Conversation'}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between w-full text-xs text-muted-foreground pl-7 font-medium">
-                          <span>{getRelativeTime(conv.updatedAt)}</span>
-                          <Badge
-                            variant="outline"
-                            className="text-[10px] px-1.5 py-0 h-4.5 font-medium"
-                          >
-                            {conv.activeModelIds.length} model
-                            {conv.activeModelIds.length !== 1 ? 's' : ''}
-                          </Badge>
-                        </div>
+                        <span className="font-medium text-sm truncate">
+                          {conv.title || 'Untitled Conversation'}
+                        </span>
                       </SidebarMenuButton>
                       <SidebarMenuAction
                         showOnHover
