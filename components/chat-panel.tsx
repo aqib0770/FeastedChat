@@ -226,21 +226,13 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
 
     return (
       <Card className="flex flex-col h-full min-h-[520px] overflow-hidden border-1 border-border/80 rounded-2xl shadow-xs bg-card">
-        <CardHeader className="flex-none py-3.5 px-5 border-b border-border/80 bg-muted/30 space-y-0">
+        <CardHeader className="flex-none px-5 border-b border-border/80  space-y-0">
           <TooltipProvider>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <h3 className="font-bold text-base sm:text-lg text-foreground tracking-tight">
                   {modelConfig.name}
                 </h3>
-                <Badge variant="outline" className="text-xs px-2.5 py-0.5 font-semibold rounded-md">
-                  {modelConfig.provider}
-                </Badge>
-                {isSnapshotMode && (
-                  <Badge variant="secondary" className="text-xs px-2 py-0.5 font-bold rounded-md">
-                    Turn {focusedTurnIndex + 1}
-                  </Badge>
-                )}
               </div>
               <div className="flex items-center gap-2">
                 {isStreaming && (
