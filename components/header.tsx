@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export function Header() {
   return (
@@ -13,6 +14,7 @@ export function Header() {
           </span>
         </div>
       </div>
+      <ThemeToggle />
     </header>
   );
 }
