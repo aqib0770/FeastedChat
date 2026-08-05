@@ -236,7 +236,6 @@ export default function Home() {
                         focusedTurnIndex={focusedTurnIndex}
                         turns={turns}
                         useMemory={useMemory}
-                        documents={documents}
                       />
                     );
                   })}
