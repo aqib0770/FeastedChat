@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, IBM_Plex_Sans, Roboto_Slab, Space_Grotesk } from 'next/font/google';
+import { Geist, Geist_Mono, IBM_Plex_Sans, Roboto_Slab, Instrument_Sans } from 'next/font/google';
 import { ThemeProvider } from 'next-themes';
 import './globals.css';
 import { cn } from '@/lib/utils';
@@ -7,7 +7,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 
 const robotoSlab = Roboto_Slab({ subsets: ['latin'], variable: '--font-serif' });
 
-const spaceGroteskHeading = Space_Grotesk({ subsets: ['latin'], variable: '--font-heading' });
+const instrumentSansHeading = Instrument_Sans({ subsets: ['latin'], variable: '--font-heading' });
 
 const ibmPlexSans = IBM_Plex_Sans({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -37,14 +37,12 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       className={cn(
-        'h-full antialiased',
+        'h-full antialiased font-sans',
         geistSans.variable,
         geistMono.variable,
-        'font-sans',
         robotoSlab.variable,
-        spaceGroteskHeading.variable,
-        'font-sans',
-        ibmPlexSans.variable
+        ibmPlexSans.variable,
+        instrumentSansHeading.variable
       )}
     >
       <body className="min-h-full flex flex-col">
