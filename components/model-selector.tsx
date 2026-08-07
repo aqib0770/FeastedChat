@@ -24,7 +24,7 @@ export function ModelSelector({
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button className="h-9 px-3.5 text-xs font-semibold gap-1.5 rounded-xl bg-[#9eff00] text-black hover:bg-[#8de000] shadow-xs" />
+          <Button className="h-9 px-3.5 text-xs font-semibold gap-1.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs" />
         }
       >
         <Plus className="h-4 w-4" />

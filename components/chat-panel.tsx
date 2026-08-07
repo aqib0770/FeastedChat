@@ -252,7 +252,7 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
                   </Tooltip>
                 )}
                 {isStreaming && (
-                  <div className="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-primary animate-pulse" />
                 )}
                 {(elapsedMs > 0 || isStreaming) && (
                   <span className="text-xs font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md border">

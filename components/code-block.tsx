@@ -99,20 +99,20 @@ export function CodeBlock({ language, value }: CodeBlockProps) {
   const displayLanguage = languageNames[normalizedLang] || normalizedLang || 'code';
 
   return (
-    <div className="not-prose my-4 overflow-hidden rounded-lg border border-border bg-[#1e1e1e] dark:bg-[#1e1e1e] font-mono text-sm shadow-md">
+    <div className="not-prose my-4 overflow-hidden rounded-lg border border-border bg-card font-mono text-sm shadow-md">
       {/* ChatGPT / Claude style header bar */}
-      <div className="flex items-center justify-between border-b border-border/60 bg-[#2d2d2d] dark:bg-[#2d2d2d] px-4 py-1.5 text-xs text-zinc-400 select-none">
-        <span className="font-sans font-medium text-zinc-300 lowercase">{displayLanguage}</span>
+      <div className="flex items-center justify-between border-b border-border/60 bg-muted px-4 py-1.5 text-xs text-muted-foreground select-none">
+        <span className="font-sans font-medium text-foreground lowercase">{displayLanguage}</span>
         <button
           type="button"
           onClick={handleCopy}
-          className="flex items-center gap-1.5 rounded px-2 py-1 text-xs text-zinc-400 hover:bg-zinc-500/20 hover:text-zinc-100 dark:hover:bg-zinc-700/50 transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 rounded px-2 py-1 text-xs text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors cursor-pointer"
           title="Copy code"
         >
           {copied ? (
             <>
-              <Check className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400" />
-              <span className="text-emerald-600 dark:text-emerald-400 font-medium">Copied!</span>
+              <Check className="h-3.5 w-3.5 text-primary" />
+              <span className="text-primary font-medium">Copied!</span>
             </>
           ) : (
             <>
@@ -124,7 +124,7 @@ export function CodeBlock({ language, value }: CodeBlockProps) {
       </div>
 
       {/* Code content with horizontal scrollbar - single seamless background */}
-      <div className="overflow-x-auto p-4 text-xs md:text-sm leading-relaxed text-zinc-800 dark:text-zinc-100 bg-[#f6f8fa] dark:bg-[#1e1e1e]">
+      <div className="overflow-x-auto p-4 text-xs md:text-sm leading-relaxed text-foreground bg-background">
         {highlightedHtml ? (
           <div
             className="[&>pre]:!bg-transparent [&>pre]:!m-0 [&>pre]:!p-0 [&>pre]:!border-0 [&>pre]:!shadow-none [&>pre]:overflow-x-auto [&>pre]:whitespace-pre [&>pre]:font-mono [&_code]:font-mono"

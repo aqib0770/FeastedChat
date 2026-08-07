@@ -160,16 +160,16 @@ export function PromptInput({
                         onClick={onToggleMemory}
                       >
                         <Brain
-                          className={`h-4 w-4 ${useMemory ? 'text-[#9eff00]' : 'text-muted-foreground'}`}
+                          className={`h-4 w-4 ${useMemory ? 'text-primary' : 'text-muted-foreground'}`}
                         />
                         <span className="text-xs font-semibold">Memory</span>
                         <span
                           className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors ${
-                            useMemory ? 'bg-[#9eff00]' : 'bg-muted border border-border/80'
+                            useMemory ? 'bg-primary' : 'bg-muted border border-border/80'
                           }`}
                         >
                           <span
-                            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
+                            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-background shadow transition-transform ${
                               useMemory ? 'translate-x-[15px]' : 'translate-x-[1px]'
                             }`}
                           />
@@ -190,12 +190,12 @@ export function PromptInput({
 
             <Button
               size="icon"
-              className="rounded-xl h-9 w-9 shrink-0 font-semibold bg-[#9eff00] text-black hover:bg-[#8de000] border-0 shadow-none"
+              className="rounded-xl h-9 w-9 shrink-0 font-semibold bg-primary text-primary-foreground hover:bg-primary/90 border-0 shadow-none"
               onClick={handleSend}
               disabled={isButtonDisabled}
               suppressHydrationWarning
             >
-              <ArrowUp className="h-4.5 w-4.5 text-black font-bold" />
+              <ArrowUp className="h-4.5 w-4.5 text-primary-foreground font-bold" />
               <span className="sr-only">Send</span>
             </Button>
           </div>

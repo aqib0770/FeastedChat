@@ -18,7 +18,7 @@ export function Toolbar({
         variant="outline"
         className="h-9 px-3 text-xs font-semibold rounded-xl bg-muted/40 text-foreground border border-border/80 flex items-center justify-center gap-2 shrink-0"
       >
-        <span className="h-2 w-2 rounded-full bg-[#9eff00]" />
+        <span className="h-2 w-2 rounded-full bg-primary" />
         <span>{selectedModelIds.length} Active</span>
       </Badge>
     </div>
