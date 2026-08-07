@@ -1,9 +1,10 @@
+import type { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';
-import { SpinnerIcon } from '@phosphor-icons/react';
+import { RiLoaderLine } from '@remixicon/react';
 
-function Spinner({ className, ...props }: React.ComponentProps<'svg'>) {
+function Spinner({ className, ...props }: Omit<ComponentProps<'svg'>, 'children'>) {
   return (
-    <SpinnerIcon
+    <RiLoaderLine
       data-slot="spinner"
       role="status"
       aria-label="Loading"
