@@ -5,6 +5,8 @@ import { ConversationSummary } from '@/lib/conversation-utils';
 import { Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { LogoIcon } from '@/components/logo';
+import { RiSideBarLine } from '@remixicon/react';
 import {
   Sidebar,
   SidebarHeader,
@@ -16,6 +18,8 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarMenuAction,
+  SidebarTrigger,
+  useSidebar,
 } from '@/components/ui/sidebar';
 
 interface AppSidebarProps {
@@ -25,6 +29,46 @@ interface AppSidebarProps {
   onNewConversation: () => void;
   onDeleteConversation: (id: string) => void;
   className?: string;
+}
+
+function SidebarLogoButton({ onNewConversation }: { onNewConversation: () => void }) {
+  const { state, toggleSidebar } = useSidebar();
+  const isCollapsed = state === 'collapsed';
+  const [isHovered, setIsHovered] = React.useState(false);
+
+  if (isCollapsed) {
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={toggleSidebar}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        title="Open Sidebar"
+        className="relative h-9 w-9 p-1 rounded-lg hover:bg-accent flex items-center justify-center shrink-0 transition-colors cursor-pointer"
+      >
+        {isHovered ? (
+          <RiSideBarLine className="h-5 w-5 text-muted-foreground transition-opacity duration-200" />
+        ) : (
+          <LogoIcon className="h-6 w-6 text-emerald-500 transition-opacity duration-200" />
+        )}
+        <span className="sr-only">Open Sidebar</span>
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={onNewConversation}
+      title="New Conversation"
+      className="h-9 w-9 p-1 rounded-lg hover:bg-accent flex items-center justify-center shrink-0 transition-colors cursor-pointer"
+    >
+      <LogoIcon className="h-6 w-6 text-emerald-500" />
+      <span className="sr-only">New Conversation</span>
+    </Button>
+  );
 }
 
 function groupConversations(conversations: ConversationSummary[]) {
@@ -64,19 +108,24 @@ export function AppSidebar({
   const grouped = groupConversations(conversations);
 
   return (
-    <Sidebar collapsible="offcanvas" className={cn('border-r bg-sidebar', className)}>
-      <SidebarHeader className="px-3 py-4 border-b border-border/60">
+    <Sidebar collapsible="icon" className={cn('border-r bg-sidebar', className)}>
+      <SidebarHeader className="p-3 border-b border-border/60 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:items-center">
+        <div className="flex items-center justify-between w-full group-data-[collapsible=icon]:justify-center">
+          <SidebarLogoButton onNewConversation={onNewConversation} />
+          <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:text-foreground group-data-[collapsible=icon]:hidden" />
+        </div>
         <Button
           onClick={onNewConversation}
-          className="w-full justify-start gap-2.5 h-11 text-base font-bold rounded-xl shadow-xs"
+          className="w-full justify-start gap-2.5 h-10 text-sm font-bold rounded-xl shadow-xs group-data-[collapsible=icon]:h-9 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:rounded-lg"
           variant="default"
+          title="New Conversation"
         >
-          <Plus className="h-5 w-5" />
-          <span>New Conversation</span>
+          <Plus className="h-4.5 w-4.5 shrink-0" />
+          <span className="group-data-[collapsible=icon]:hidden">New Conversation</span>
         </Button>
       </SidebarHeader>
 
-      <SidebarContent className="p-2">
+      <SidebarContent className="p-2 group-data-[collapsible=icon]:hidden">
         {grouped.map((group) => (
           <SidebarGroup key={group.label}>
             <SidebarGroupLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80 px-2 py-2.5">
