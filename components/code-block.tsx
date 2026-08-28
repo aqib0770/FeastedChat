@@ -100,7 +100,7 @@ export function CodeBlock({ language, value }: CodeBlockProps) {
 
   return (
     <div className="not-prose my-4 overflow-hidden rounded-lg border border-border bg-card font-mono text-sm shadow-md">
-      {/* ChatGPT / Claude style header bar */}
+      {}
       <div className="flex items-center justify-between border-b border-border/60 bg-muted px-4 py-1.5 text-xs text-muted-foreground select-none">
         <span className="font-sans font-medium text-foreground lowercase">{displayLanguage}</span>
         <button
@@ -123,7 +123,7 @@ export function CodeBlock({ language, value }: CodeBlockProps) {
         </button>
       </div>
 
-      {/* Code content with horizontal scrollbar - single seamless background */}
+      {}
       <div className="overflow-x-auto p-4 text-xs md:text-sm leading-relaxed text-foreground bg-background">
         {highlightedHtml ? (
           <div

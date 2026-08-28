@@ -56,7 +56,6 @@ export async function ingestPdf(
       },
     }));
 
-    // Upsert in batches of 50
     const BATCH_SIZE = 50;
     for (let i = 0; i < points.length; i += BATCH_SIZE) {
       await qdrant.upsert(QDRANT_COLLECTION, {

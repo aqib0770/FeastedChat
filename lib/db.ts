@@ -35,7 +35,6 @@ async function ensureIndexes(db: Db): Promise<void> {
       db.collection(COLLECTIONS.documents).createIndex({ conversationId: 1 }),
     ]);
   } catch (err) {
-    // If index creation fails (e.g. duplicate key), log but don't crash
     console.warn('[db] Index creation warning:', err);
   }
 }

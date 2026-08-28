@@ -19,8 +19,6 @@ export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const mounted = useHydrated();
 
-  // Server + first client render: don't render a theme-dependent icon yet,
-  // which prevents the hydration mismatch.
   if (!mounted) {
     return <Button variant="ghost" size="icon" aria-label="Toggle theme" />;
   }

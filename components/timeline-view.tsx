@@ -40,7 +40,7 @@ export function TimelineView({ turns, modelFilter, focusedTurnIndex = null }: Ti
     <div className="flex flex-col space-y-8 max-w-4xl mx-auto pb-20 p-4">
       {visibleTurns.map((turn) => (
         <div key={turn.id} className="space-y-4">
-          {/* User Prompt */}
+          {}
           <div className="flex justify-end">
             <div className="max-w-[85%] space-y-1.5">
               <div className="flex items-center justify-end gap-2">
@@ -55,7 +55,7 @@ export function TimelineView({ turns, modelFilter, focusedTurnIndex = null }: Ti
             </div>
           </div>
 
-          {/* Model Responses */}
+          {}
           <div className="space-y-3">
             {turn.responses.map((response) => {
               if (modelFilter && response.modelId !== modelFilter) return null;
@@ -128,7 +128,7 @@ export function TimelineView({ turns, modelFilter, focusedTurnIndex = null }: Ti
               );
             })}
 
-            {/* If model filter is applied and this model didn't respond in this turn */}
+            {}
             {modelFilter && !turn.responses.some((r) => r.modelId === modelFilter) && (
               <div className="flex justify-start">
                 <Card className="p-3 bg-muted/30 border-dashed text-muted-foreground text-xs flex items-center gap-2">

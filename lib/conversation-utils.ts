@@ -47,7 +47,6 @@ export function truncateTitle(content: string, max = 48): string {
   return trimmed.slice(0, max).trimEnd() + '…';
 }
 
-/** Build UIMessage-like pairs for a single model's full thread */
 export function buildModelThreadMessages(
   turns: StoredTurn[],
   modelId: string
@@ -78,7 +77,6 @@ export function buildModelThreadMessages(
   return messages;
 }
 
-/** Models that answered at least one question in the conversation */
 export function getModelsUsedInConversation(turns: StoredTurn[]): string[] {
   const modelIds = new Set<string>();
   for (const turn of turns) {
@@ -91,7 +89,6 @@ export function getModelsUsedInConversation(turns: StoredTurn[]): string[] {
   return Array.from(modelIds);
 }
 
-/** Model IDs that responded on the last turn (for default panels on open) */
 export function getLastTurnModelIds(turns: StoredTurn[]): string[] {
   if (turns.length === 0) return [];
   const lastTurn = turns[turns.length - 1];
@@ -100,7 +97,6 @@ export function getLastTurnModelIds(turns: StoredTurn[]): string[] {
     .map((r) => r.modelId);
 }
 
-/** Turn IDs where a model has a response */
 export function getTurnIdsForModel(turns: StoredTurn[], modelId: string | null): string[] {
   if (!modelId) return turns.map((t) => t.id);
   return turns

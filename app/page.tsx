@@ -51,7 +51,6 @@ export default function Home() {
     refreshConversations,
   } = useConversations();
 
-  // Track streaming state reactively for the UI
   const [streamingState, setStreamingState] = useState(false);
   const [useMemory, setUseMemory] = useState(true);
 
@@ -80,7 +79,7 @@ export default function Home() {
   const handleSend = useCallback(
     async (content: string) => {
       await sendToAll(content);
-      // Start polling streaming state
+
       setStreamingState(true);
 
       if (streamingIntervalRef.current) clearInterval(streamingIntervalRef.current);
@@ -90,14 +89,13 @@ export default function Home() {
         const isStreaming = isAnyStreaming();
         const elapsed = Date.now() - startTime;
 
-        // Stop polling if all streams finished OR if 60s safety timeout reached
         if (!isStreaming || elapsed > 60000) {
           setStreamingState(false);
           if (streamingIntervalRef.current) {
             clearInterval(streamingIntervalRef.current);
             streamingIntervalRef.current = null;
           }
-          // Refresh sidebar and turns to show updated conversation
+
           refreshConversations();
           reloadTurns();
         }
@@ -127,7 +125,7 @@ export default function Home() {
     async (id: string) => {
       try {
         await deleteConversation(id);
-        // If the deleted conversation was active, start fresh
+
         if (activeConversationId === id) {
           startNewConversation();
         }
@@ -138,7 +136,6 @@ export default function Home() {
     [deleteConversation, activeConversationId, startNewConversation]
   );
 
-  // Create stable ref callbacks for each model (memoized so refs survive re-renders)
   const refCallbacks = useMemo(() => {
     const map = new Map<string, (ref: ChatPanelRef | null) => void>();
     return {
@@ -153,10 +150,8 @@ export default function Home() {
     };
   }, [registerPanel]);
 
-  // Stable panel key prefix
   const panelKeyPrefix = conversationId ?? 'new';
 
-  // Filter panels in Compare mode if a modelFilter is active
   const displayModelIds = modelFilter ? [modelFilter] : selectedModelIds;
 
   return (
@@ -170,7 +165,7 @@ export default function Home() {
       />
 
       <SidebarInset className="flex flex-col h-full overflow-hidden">
-        {/* Top Control Bar */}
+        {}
         <div className="flex items-center justify-between px-4 sm:px-6 pt-3 pb-2 bg-transparent gap-4 shrink-0 overflow-x-auto no-scrollbar">
           <div className="flex items-center gap-3 shrink min-w-0">
             {activeConvTitle && (
@@ -198,7 +193,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Main content */}
+        {}
         <div className="flex-1 overflow-auto">
           {viewMode === 'timeline' ? (
             <TimelineView
@@ -250,7 +245,7 @@ export default function Home() {
           )}
         </div>
 
-        {/* Shared Prompt Input with PDF upload button & document attachments */}
+        {}
         <PromptInput
           onSend={handleSend}
           isAnyStreaming={streamingState}
@@ -266,7 +261,7 @@ export default function Home() {
           onToggleMemory={() => setUseMemory((v) => !v)}
         />
 
-        {/* Floating Error Toast Notification */}
+        {}
         {errorToast && (
           <div className="fixed bottom-24 right-6 z-50 flex items-center gap-3 bg-destructive text-destructive-foreground px-4 py-3 rounded-lg shadow-lg border animate-in fade-in slide-in-from-bottom-5">
             <AlertCircle className="h-5 w-5 shrink-0" />

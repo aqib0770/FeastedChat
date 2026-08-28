@@ -80,7 +80,7 @@ export function PromptInput({
   return (
     <div className="sticky bottom-0 px-6 pb-4 pt-2 bg-background shrink-0 flex flex-col w-full z-20">
       <div className="bg-card border border-border/80 rounded-2xl p-2 flex flex-col gap-2 shadow-xs focus-within:border-border/100 transition-all w-full">
-        {/* Attached PDF Chips Strip */}
+        {}
         {documents && documents.length > 0 && onDeleteDocument && (
           <div className="flex items-center gap-2 px-2 pb-2 border-b border-border/60 overflow-x-auto no-scrollbar">
             <span className="text-xs font-semibold text-muted-foreground shrink-0 flex items-center gap-1">
@@ -94,7 +94,7 @@ export function PromptInput({
         )}
 
         <div className="flex items-center gap-2 w-full">
-          {/* Upload PDF attachment button */}
+          {}
           {onUpload && (
             <>
               <input

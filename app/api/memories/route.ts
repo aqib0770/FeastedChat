@@ -2,9 +2,6 @@ import { NextResponse } from 'next/server';
 import { requireSessionKey } from '@/lib/session';
 import { getAllMemories, deleteAllMemoriesForUser } from '@/lib/memory';
 
-/**
- * GET /api/memories — List all memories for the current session user.
- */
 export async function GET() {
   try {
     const sessionKey = await requireSessionKey();
@@ -17,9 +14,6 @@ export async function GET() {
   }
 }
 
-/**
- * DELETE /api/memories — Delete all memories for the current session user.
- */
 export async function DELETE() {
   try {
     const sessionKey = await requireSessionKey();

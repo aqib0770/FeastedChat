@@ -19,7 +19,6 @@ import type { ModelConfig, ChatPanelRef } from '@/types';
 import type { StoredTurn } from '@/lib/conversation-utils';
 import { Square, AlertCircle, X, Info } from 'lucide-react';
 
-/** Persistence IDs passed alongside each message send */
 export interface PersistenceIds {
   conversationId: string;
   turnId: string;
@@ -29,23 +28,22 @@ export interface PersistenceIds {
 interface ChatPanelProps {
   modelConfig: ModelConfig;
   onRemove?: () => void;
-  /** Pre-loaded messages for hydrating from DB */
+
   initialMessages?: Array<{
     id: string;
     role: 'user' | 'assistant';
     parts: Array<{ type: 'text'; text: string }>;
   }>;
-  /** Unique chat ID scoped to conversation + model */
+
   chatId?: string;
-  /** Current focused turn index for snapshot mode (null = full mode) */
+
   focusedTurnIndex?: number | null;
-  /** All turns in the conversation for snapshot rendering */
+
   turns?: StoredTurn[];
-  /** Enable mem0 memory layer */
+
   useMemory?: boolean;
 }
 
-/** Extract text content from a v7 UIMessage (uses parts array) */
 const getMessageText = (message: {
   parts?: Array<{ type: string; text?: string }>;
   content?: string;
@@ -73,7 +71,6 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
     },
     ref
   ) => {
-    // Track persistence IDs for the current stream
     const persistenceRef = useRef<PersistenceIds | null>(null);
     const useMemoryRef = useRef(useMemory);
 
@@ -81,7 +78,6 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
       useMemoryRef.current = useMemory;
     }, [useMemory]);
 
-    // Each panel gets its own useChat with a unique transport that sends the model ID
     const { messages, sendMessage, stop, setMessages, regenerate, status, error } = useChat({
       id: chatId ?? 'chat-' + modelConfig.id,
       transport: new DefaultChatTransport({
@@ -94,7 +90,6 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
       }),
     });
 
-    // Hydrate with historical messages when panel mounts or conversation changes
     const hydrationKeyRef = useRef<string | null>(null);
     useEffect(() => {
       const key = chatId ?? modelConfig.id;
@@ -115,7 +110,6 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
       ref,
       () => ({
         sendMessage: (content: string, persistence?: PersistenceIds) => {
-          // Store persistence IDs for the transport body
           persistenceRef.current = persistence ?? null;
           sendMessage({ text: content });
         },
@@ -128,7 +122,6 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
       [sendMessage, setMessages, regenerate]
     );
 
-    // Elapsed time tracking
     const [elapsedMs, setElapsedMs] = useState(0);
     const startTimeRef = useRef<number | null>(null);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -161,7 +154,6 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
       };
     }, [isStreaming, status]);
 
-    // Copy a specific assistant message
     const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
     const handleCopyMessage = useCallback((message: (typeof messages)[number]) => {
       navigator.clipboard.writeText(getMessageText(message));
@@ -169,7 +161,6 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
       setTimeout(() => setCopiedMessageId((id) => (id === message.id ? null : id)), 2000);
     }, []);
 
-    // Regenerate a specific assistant message by truncating up to its preceding user message
     const handleRegenerateMessage = useCallback(
       (message: (typeof messages)[number]) => {
         const index = messages.findIndex((m) => m.id === message.id);
@@ -180,13 +171,11 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
       [messages, setMessages, regenerate]
     );
 
-    // Auto-scroll
     const messagesEndRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, status, focusedTurnIndex]);
 
-    // Determine snapshot mode content
     const isSnapshotMode = focusedTurnIndex !== null;
     const snapshotTurn = isSnapshotMode
       ? turns.find((t) => t.turnIndex === focusedTurnIndex)
@@ -195,7 +184,6 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
       ? snapshotTurn.responses.find((r) => r.modelId === modelConfig.id)
       : null;
 
-    // Check if model was active in this turn
     const userMsgIndex = focusedTurnIndex !== null ? focusedTurnIndex * 2 : -1;
     const assistantMsgIndex = focusedTurnIndex !== null ? focusedTurnIndex * 2 + 1 : -1;
 

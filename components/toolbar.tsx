@@ -12,7 +12,7 @@ export function Toolbar({
 }) {
   return (
     <div className="flex items-center gap-2.5 shrink-0">
-      {/* Model Selection Group */}
+      {}
       <ModelSelector selectedModelIds={selectedModelIds} onToggleModel={onToggleModel} />
       <Badge
         variant="outline"

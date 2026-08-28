@@ -14,7 +14,6 @@ import { searchMemories, addMemories, buildMemorySystemPrompt } from '@/lib/memo
 
 export const maxDuration = 60;
 
-/** Extract the latest user message text from UIMessages */
 function getLatestUserText(messages: UIMessage[]): string {
   for (let i = messages.length - 1; i >= 0; i--) {
     const msg = messages[i];
@@ -60,7 +59,6 @@ export async function POST(req: Request) {
 
     const isPersisted = conversationId && turnId && responseId;
 
-    // Update response status to streaming
     if (isPersisted) {
       try {
         const db = await getDb();
@@ -72,7 +70,6 @@ export async function POST(req: Request) {
       }
     }
 
-    // RAG: retrieve relevant context from uploaded documents when available
     let systemPrompt: string | undefined;
     try {
       const sessionKey = await requireSessionKey();
@@ -85,7 +82,6 @@ export async function POST(req: Request) {
       console.warn('[/api/chat] RAG retrieval failed, continuing without context:', err);
     }
 
-    // Memory: retrieve relevant LTM and STM memories when enabled
     if (useMemory) {
       try {
         const sessionKey = await requireSessionKey();
@@ -102,8 +98,6 @@ export async function POST(req: Request) {
       }
     }
 
-    // When memory is enabled, send only the latest user message.
-    // Memory layer provides all necessary LTM & STM context via the system prompt!
     const effectiveMessages = useMemory
       ? messages.filter((m) => m.role === 'user').slice(-1)
       : messages;
@@ -135,7 +129,6 @@ export async function POST(req: Request) {
           }
         }
 
-        // Memory: extract and store facts asynchronously (non-blocking)
         if (useMemory) {
           (async () => {
             try {

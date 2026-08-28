@@ -2,12 +2,8 @@ import { NextResponse } from 'next/server';
 import { requireSessionKey } from '@/lib/session';
 import { deleteMemoryById } from '@/lib/memory';
 
-/**
- * DELETE /api/memories/:id — Delete a single memory by ID.
- */
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    // Verify the user has a valid session
     await requireSessionKey();
 
     const { id } = await params;
