@@ -4,7 +4,9 @@ const QDRANT_URL = process.env.QDRANT_URL ?? 'http://127.0.0.1:6333';
 const QDRANT_API_KEY = process.env.QDRANT_API_KEY;
 
 export const QDRANT_COLLECTION = 'document_chunks';
-export const VECTOR_SIZE = 1024;
+export const VECTOR_SIZE = Number(
+  process.env.EMBEDDING_DIMS ?? process.env.MEM0_EMBEDDER_DIMS ?? '1536'
+);
 
 declare global {
   var _qdrantClient: QdrantClient | undefined;
