@@ -11,7 +11,7 @@ import type {
 } from '@/lib/conversation-utils';
 import { buildModelThreadMessages, getModelsUsedInConversation } from '@/lib/conversation-utils';
 
-export function useChatComparison() {
+export function useChatComparison(initialConversationId?: string | null) {
   const [selectedModelIds, setSelectedModelIds] = useState<string[]>(DEFAULT_SELECTED_MODEL_IDS);
   const [errorToast, setErrorToast] = useState<string | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -31,6 +31,42 @@ export function useChatComparison() {
   }, [errorToast]);
 
   const panelRefs = useRef<Map<string, ChatPanelRef>>(new Map());
+  const hydrateConversation = useCallback((detail: ConversationDetail) => {
+    panelRefs.current.forEach((ref) => ref.clear());
+
+    setConversationId(detail.conversation.id);
+    setTurns(detail.turns);
+    setSelectedModelIds(detail.conversation.activeModelIds);
+    setFocusedTurnIndex(null);
+    setPanelViewMode('full');
+    setViewMode('compare');
+    setModelFilter(null);
+  }, []);
+
+  // When an initial conversation ID is provided (from URL), load it on mount
+  useEffect(() => {
+    if (!initialConversationId) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/conversations/${initialConversationId}`);
+        if (!res.ok) throw new Error('Failed to load conversation');
+        const detail: ConversationDetail = await res.json();
+        if (!cancelled) {
+          hydrateConversation(detail);
+        }
+      } catch (err) {
+        console.error('Failed to load conversation from URL:', err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // Only run on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialConversationId]);
 
   const clearToast = useCallback(() => {
     setErrorToast(null);
@@ -169,18 +205,6 @@ export function useChatComparison() {
       if (ref.isStreaming) return true;
     }
     return false;
-  }, []);
-
-  const hydrateConversation = useCallback((detail: ConversationDetail) => {
-    panelRefs.current.forEach((ref) => ref.clear());
-
-    setConversationId(detail.conversation.id);
-    setTurns(detail.turns);
-    setSelectedModelIds(detail.conversation.activeModelIds);
-    setFocusedTurnIndex(null);
-    setPanelViewMode('full');
-    setViewMode('compare');
-    setModelFilter(null);
   }, []);
 
   const startNewConversation = useCallback(() => {
