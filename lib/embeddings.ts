@@ -1,12 +1,9 @@
 import { embed, embedMany } from 'ai';
-import { getEmbeddingModel, getOllamaEmbeddingModel } from '@/lib/gateway';
+import { getEmbeddingModel } from '@/lib/gateway';
 
-const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL ?? 'ollama/nomic-embed-text';
+const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL ?? 'openai/text-embedding-3-small';
 
 function resolveEmbeddingModel() {
-  if (EMBEDDING_MODEL.startsWith('ollama/')) {
-    return getOllamaEmbeddingModel(EMBEDDING_MODEL.slice('ollama/'.length));
-  }
   return getEmbeddingModel(EMBEDDING_MODEL);
 }
 
