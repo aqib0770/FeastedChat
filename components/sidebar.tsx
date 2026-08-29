@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ConversationSummary } from '@/lib/conversation-utils';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { LogoIcon } from '@/components/logo';
@@ -28,6 +28,7 @@ interface AppSidebarProps {
   onSelectConversation: (id: string) => void;
   onNewConversation: () => void;
   onDeleteConversation: (id: string) => void;
+  onSearchClick?: () => void;
   className?: string;
 }
 
@@ -88,6 +89,7 @@ export function AppSidebar({
   onSelectConversation,
   onNewConversation,
   onDeleteConversation,
+  onSearchClick,
   className,
 }: AppSidebarProps) {
   const grouped = groupConversations(conversations);
@@ -97,7 +99,19 @@ export function AppSidebar({
       <SidebarHeader className="p-2 border-b border-border/60 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:items-center gap-2">
         <div className="flex items-center justify-between w-full group-data-[collapsible=icon]:justify-center h-7">
           <SidebarLogoButton />
-          <SidebarTrigger className="h-7 w-7 text-muted-foreground hover:text-foreground group-data-[collapsible=icon]:hidden [&_svg]:size-4" />
+          <div className="flex items-center gap-1 group-data-[collapsible=icon]:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onSearchClick}
+              title="Search chats (Ctrl+K)"
+              className="h-7 w-7 text-muted-foreground hover:text-foreground [&_svg]:size-4"
+            >
+              <Search className="h-4 w-4" />
+              <span className="sr-only">Search chats</span>
+            </Button>
+            <SidebarTrigger className="h-7 w-7 text-muted-foreground hover:text-foreground [&_svg]:size-4" />
+          </div>
         </div>
         <Button
           onClick={onNewConversation}
@@ -107,6 +121,17 @@ export function AppSidebar({
         >
           <Plus className="h-4 w-4 shrink-0" />
           <span className="group-data-[collapsible=icon]:hidden">New chat</span>
+        </Button>
+        {/* Collapsed-only search button — below New chat, like ChatGPT */}
+        <Button
+          onClick={onSearchClick}
+          variant="ghost"
+          size="icon"
+          title="Search chats"
+          className="hidden group-data-[collapsible=icon]:flex h-8 w-8 p-0 justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent"
+        >
+          <Search className="h-4 w-4" />
+          <span className="sr-only">Search chats</span>
         </Button>
       </SidebarHeader>
 
