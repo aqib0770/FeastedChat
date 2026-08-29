@@ -29,10 +29,11 @@ export function ThemeToggle() {
     <Button
       variant="ghost"
       size="icon"
+      className="h-7 w-7 [&_svg]:size-4"
       aria-label="Toggle theme"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
     >
-      {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </Button>
   );
 }

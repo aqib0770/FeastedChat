@@ -212,16 +212,16 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
       (snapshotTurn ? `snapshot-${snapshotTurn.turnIndex}-${modelConfig.id}` : '');
 
     return (
-      <Card className="flex flex-col h-full min-h-[520px] overflow-hidden border-1 border-border/80 rounded-2xl shadow-xs bg-card">
-        <CardHeader className="flex-none px-5 border-b border-border/80  space-y-0">
+      <Card className="flex flex-col h-full min-h-0 overflow-hidden border border-border/50 rounded-xl shadow-none bg-card">
+        <CardHeader className="flex-none px-3 py-2.5 border-b border-border/50 space-y-0">
           <TooltipProvider>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <h3 className="font-bold text-base sm:text-lg text-foreground tracking-tight">
+            <div className="flex items-center justify-between h-7">
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-sm text-foreground tracking-tight">
                   {modelConfig.name}
                 </h3>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 {isStreaming && (
                   <Tooltip>
                     <TooltipTrigger
@@ -229,21 +229,19 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-8 w-8 rounded-lg text-destructive border-destructive/30"
+                          className="h-7 w-7 rounded-md text-destructive border-destructive/30"
                           onClick={stop}
                         />
                       }
                     >
-                      <Square className="h-4 w-4 fill-current" />
+                      <Square className="h-3.5 w-3.5 fill-current" />
                     </TooltipTrigger>
                     <TooltipContent>Stop generating</TooltipContent>
                   </Tooltip>
                 )}
-                {isStreaming && (
-                  <div className="h-2.5 w-2.5 rounded-full bg-primary animate-pulse" />
-                )}
+                {isStreaming && <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />}
                 {(elapsedMs > 0 || isStreaming) && (
-                  <span className="text-xs font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md border">
+                  <span className="text-[11px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md border">
                     {(elapsedMs / 1000).toFixed(1)}s
                   </span>
                 )}
@@ -254,12 +252,12 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg"
+                          className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md"
                           onClick={onRemove}
                         />
                       }
                     >
-                      <X className="h-4.5 w-4.5" />
+                      <X className="h-4 w-4" />
                     </TooltipTrigger>
                     <TooltipContent>Remove panel</TooltipContent>
                   </Tooltip>
@@ -271,7 +269,7 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
 
         <CardContent className="flex-1 overflow-hidden p-0 relative">
           <ScrollArea className="h-full">
-            <div className="flex flex-col gap-5 p-5 min-w-0">
+            <div className="flex flex-col gap-3 p-3 min-w-0">
               {isSnapshotMode ? (
                 isModelActive ? (
                   <>

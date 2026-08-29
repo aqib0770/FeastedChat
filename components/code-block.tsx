@@ -99,24 +99,24 @@ export function CodeBlock({ language, value }: CodeBlockProps) {
   const displayLanguage = languageNames[normalizedLang] || normalizedLang || 'code';
 
   return (
-    <div className="not-prose my-4 overflow-hidden rounded-lg border border-border bg-card font-mono text-sm shadow-md">
+    <div className="not-prose my-3 overflow-hidden rounded-md border border-border bg-card font-mono text-[13px] shadow-none">
       {}
-      <div className="flex items-center justify-between border-b border-border/60 bg-muted px-4 py-1.5 text-xs text-muted-foreground select-none">
+      <div className="flex items-center justify-between border-b border-border/60 bg-muted px-3 py-1 text-[11px] text-muted-foreground select-none">
         <span className="font-sans font-medium text-foreground lowercase">{displayLanguage}</span>
         <button
           type="button"
           onClick={handleCopy}
-          className="flex items-center gap-1.5 rounded px-2 py-1 text-xs text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors cursor-pointer"
+          className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors cursor-pointer"
           title="Copy code"
         >
           {copied ? (
             <>
-              <Check className="h-3.5 w-3.5 text-primary" />
+              <Check className="h-3 w-3 text-primary" />
               <span className="text-primary font-medium">Copied!</span>
             </>
           ) : (
             <>
-              <Copy className="h-3.5 w-3.5" />
+              <Copy className="h-3 w-3" />
               <span>Copy code</span>
             </>
           )}
@@ -124,7 +124,7 @@ export function CodeBlock({ language, value }: CodeBlockProps) {
       </div>
 
       {}
-      <div className="overflow-x-auto p-4 text-xs md:text-sm leading-relaxed text-foreground bg-background">
+      <div className="overflow-x-auto p-3 text-xs leading-5 text-foreground bg-background">
         {highlightedHtml ? (
           <div
             className="[&>pre]:!bg-transparent [&>pre]:!m-0 [&>pre]:!p-0 [&>pre]:!border-0 [&>pre]:!shadow-none [&>pre]:overflow-x-auto [&>pre]:whitespace-pre [&>pre]:font-mono [&_code]:font-mono"

@@ -24,28 +24,28 @@ export function ModelSelector({
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button className="h-9 px-3.5 text-xs font-semibold gap-1.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs" />
+          <Button className="h-7 px-3 text-[11px] font-medium gap-1 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 shadow-none" />
         }
       >
-        <Plus className="h-4 w-4" />
+        <Plus className="h-3.5 w-3.5" />
         <span>Add Model</span>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[260px] p-1.5">
+      <DropdownMenuContent align="start" className="w-[260px] p-1">
         {AVAILABLE_MODELS.map((model: ModelConfig) => {
           const isSelected = selectedModelIds.includes(model.id);
           return (
             <DropdownMenuItem
               key={model.id}
               onClick={() => onToggleModel(model.id)}
-              className="flex items-center justify-between cursor-pointer py-2 px-2.5 text-sm font-medium rounded-md"
+              className="flex items-center justify-between cursor-pointer py-1.5 px-2 text-xs font-medium rounded-md"
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <span>{model.name}</span>
-                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 font-normal">
+                <Badge variant="outline" className="text-[10px] px-1 py-0 h-3.5 font-normal">
                   {model.provider}
                 </Badge>
               </div>
-              {isSelected && <Check className="h-4 w-4 text-primary shrink-0 ml-2" />}
+              {isSelected && <Check className="h-3.5 w-3.5 text-primary shrink-0 ml-2" />}
             </DropdownMenuItem>
           );
         })}

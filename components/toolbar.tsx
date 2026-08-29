@@ -11,14 +11,14 @@ export function Toolbar({
   onToggleModel: (id: string) => void;
 }) {
   return (
-    <div className="flex items-center gap-2.5 shrink-0">
+    <div className="flex items-center gap-2 shrink-0">
       {}
       <ModelSelector selectedModelIds={selectedModelIds} onToggleModel={onToggleModel} />
       <Badge
         variant="outline"
-        className="h-9 px-3 text-xs font-semibold rounded-xl bg-muted/40 text-foreground border border-border/80 flex items-center justify-center gap-2 shrink-0"
+        className="h-7 px-2.5 text-[11px] font-medium rounded-full bg-muted/40 text-foreground border border-border/60 flex items-center justify-center gap-1.5 shrink-0"
       >
-        <span className="h-2 w-2 rounded-full bg-primary" />
+        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
         <span>{selectedModelIds.length} Active</span>
       </Badge>
     </div>

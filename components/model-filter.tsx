@@ -34,19 +34,19 @@ export function ModelFilter({
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="outline" className="gap-2 h-10 text-sm font-medium px-3.5 rounded-lg">
-            <Filter className="h-4 w-4 text-muted-foreground" />
+          <Button variant="outline" className="gap-1.5 h-7 text-xs font-medium px-3 rounded-lg">
+            <Filter className="h-3.5 w-3.5 text-muted-foreground" />
             <span className="truncate max-w-[140px]">{getModelName(selectedModelId)}</span>
           </Button>
         }
       />
-      <DropdownMenuContent align="end" className="w-60 p-1.5">
+      <DropdownMenuContent align="end" className="w-60 p-1">
         <DropdownMenuItem
-          className="flex justify-between items-center cursor-pointer text-sm font-medium py-2 px-2.5 rounded-md"
+          className="flex justify-between items-center cursor-pointer text-xs font-medium py-1.5 px-2 rounded-md"
           onClick={() => onSelectModel(null)}
         >
           <span>All Models</span>
-          {selectedModelId === null && <Check className="h-4 w-4 text-primary shrink-0" />}
+          {selectedModelId === null && <Check className="h-3.5 w-3.5 text-primary shrink-0" />}
         </DropdownMenuItem>
 
         <div className="h-px bg-border my-1" />
@@ -58,7 +58,7 @@ export function ModelFilter({
           return (
             <DropdownMenuItem
               key={id}
-              className="flex justify-between items-center cursor-pointer text-sm font-medium py-2 px-2.5 rounded-md"
+              className="flex justify-between items-center cursor-pointer text-xs font-medium py-1.5 px-2 rounded-md"
               onClick={() => onSelectModel(id)}
             >
               <div className="flex flex-col gap-0.5 min-w-0">
@@ -66,13 +66,13 @@ export function ModelFilter({
                 {modelInfo?.provider && (
                   <Badge
                     variant="outline"
-                    className="text-[10px] w-fit px-1.5 py-0 h-4 font-normal"
+                    className="text-[10px] w-fit px-1 py-0 h-3.5 font-normal"
                   >
                     {modelInfo.provider}
                   </Badge>
                 )}
               </div>
-              {isSelected && <Check className="h-4 w-4 text-primary shrink-0 ml-2" />}
+              {isSelected && <Check className="h-3.5 w-3.5 text-primary shrink-0 ml-2" />}
             </DropdownMenuItem>
           );
         })}

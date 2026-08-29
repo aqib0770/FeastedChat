@@ -78,8 +78,8 @@ export function PromptInput({
   );
 
   return (
-    <div className="sticky bottom-0 px-6 pb-4 pt-2 bg-background shrink-0 flex flex-col w-full z-20">
-      <div className="bg-card border border-border/80 rounded-2xl p-2 flex flex-col gap-2 shadow-xs focus-within:border-border/100 transition-all w-full">
+    <div className="sticky bottom-0 px-3 pb-3 pt-1.5 bg-background shrink-0 flex flex-col w-full z-20">
+      <div className="bg-card border border-border/50 rounded-2xl p-1.5 flex flex-col gap-1.5 shadow-none focus-within:border-border/80 transition-all w-full">
         {}
         {documents && documents.length > 0 && onDeleteDocument && (
           <div className="flex items-center gap-2 px-2 pb-2 border-b border-border/60 overflow-x-auto no-scrollbar">
@@ -111,16 +111,16 @@ export function PromptInput({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="rounded-xl h-9 w-9 shrink-0 text-muted-foreground hover:text-foreground hover:bg-muted/50 border-0"
+                        className="rounded-full h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground hover:bg-muted/50 border-0"
                         disabled={disabled || isUploading}
                         onClick={() => fileInputRef.current?.click()}
                       />
                     }
                   >
                     {isUploading ? (
-                      <Loader2 className="h-4.5 w-4.5 animate-spin text-primary" />
+                      <Loader2 className="h-4 w-4 animate-spin text-primary" />
                     ) : (
-                      <Paperclip className="h-4.5 w-4.5" />
+                      <Paperclip className="h-4 w-4" />
                     )}
                   </TooltipTrigger>
                   <TooltipContent>Attach PDF for RAG context</TooltipContent>
@@ -129,7 +129,7 @@ export function PromptInput({
             </>
           )}
 
-          <div className="relative flex-1 flex items-center min-h-[38px]">
+          <div className="relative flex-1 flex items-center min-h-[36px]">
             <textarea
               value={value}
               onChange={(e) => setValue(e.target.value)}
@@ -143,11 +143,11 @@ export function PromptInput({
               }
               disabled={disabled || isUploading}
               rows={1}
-              className="bg-transparent border-0 outline-none shadow-none resize-none focus:outline-none focus:ring-0 focus-visible:ring-0 min-h-[38px] max-h-[160px] py-1.5 px-1 text-sm leading-relaxed w-full placeholder:text-muted-foreground/60 text-foreground"
+              className="bg-transparent border-0 outline-none shadow-none resize-none focus:outline-none focus:ring-0 focus-visible:ring-0 min-h-[36px] max-h-[160px] py-1 px-1 text-[14px] leading-6 w-full placeholder:text-muted-foreground/60 text-foreground"
             />
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             {onToggleMemory && (
               <TooltipProvider>
                 <Tooltip>
@@ -156,21 +156,21 @@ export function PromptInput({
                       <Button
                         variant="ghost"
                         aria-pressed={useMemory}
-                        className="h-9 shrink-0 px-2 gap-2 rounded-xl border-0 bg-transparent hover:bg-transparent text-muted-foreground hover:text-foreground"
+                        className="h-7 shrink-0 px-1.5 gap-1.5 rounded-full border-0 bg-transparent hover:bg-transparent text-muted-foreground hover:text-foreground"
                         onClick={onToggleMemory}
                       >
                         <Brain
-                          className={`h-4 w-4 ${useMemory ? 'text-primary' : 'text-muted-foreground'}`}
+                          className={`h-3.5 w-3.5 ${useMemory ? 'text-primary' : 'text-muted-foreground'}`}
                         />
-                        <span className="text-xs font-semibold">Memory</span>
+                        <span className="text-[11px] font-medium">Memory</span>
                         <span
-                          className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors ${
-                            useMemory ? 'bg-primary' : 'bg-muted border border-border/80'
+                          className={`relative inline-flex h-3.5 w-7 items-center rounded-full transition-colors ${
+                            useMemory ? 'bg-primary' : 'bg-muted border border-border/60'
                           }`}
                         >
                           <span
-                            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-background shadow transition-transform ${
-                              useMemory ? 'translate-x-[15px]' : 'translate-x-[1px]'
+                            className={`inline-block h-3 w-3 transform rounded-full bg-background shadow transition-transform ${
+                              useMemory ? 'translate-x-[13px]' : 'translate-x-[1px]'
                             }`}
                           />
                         </span>
@@ -190,20 +190,20 @@ export function PromptInput({
 
             <Button
               size="icon"
-              className="rounded-xl h-9 w-9 shrink-0 font-semibold bg-primary text-primary-foreground hover:bg-primary/90 border-0 shadow-none"
+              className="rounded-full h-8 w-8 shrink-0 font-semibold bg-primary text-primary-foreground hover:bg-primary/90 border-0 shadow-none"
               onClick={handleSend}
               disabled={isButtonDisabled}
               suppressHydrationWarning
             >
-              <ArrowUp className="h-4.5 w-4.5 text-primary-foreground font-bold" />
+              <ArrowUp className="h-4 w-4 text-primary-foreground font-bold" />
               <span className="sr-only">Send</span>
             </Button>
           </div>
         </div>
       </div>
-      <div className="text-[10px] sm:text-xs text-muted-foreground/65 mt-2 flex items-center justify-center gap-1 font-medium">
+      <div className="text-[11px] text-muted-foreground/60 mt-1.5 flex items-center justify-center gap-1 font-normal">
         <span>Responses from all active models appear here for easy comparison</span>
-        <Info className="h-3.5 w-3.5 text-muted-foreground/80" />
+        <Info className="h-3 w-3 text-muted-foreground/70" />
       </div>
     </div>
   );

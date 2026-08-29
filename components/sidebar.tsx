@@ -31,10 +31,9 @@ interface AppSidebarProps {
   className?: string;
 }
 
-function SidebarLogoButton({ onNewConversation }: { onNewConversation: () => void }) {
+function SidebarLogoButton() {
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === 'collapsed';
-  const [isHovered, setIsHovered] = React.useState(false);
 
   if (isCollapsed) {
     return (
@@ -42,32 +41,18 @@ function SidebarLogoButton({ onNewConversation }: { onNewConversation: () => voi
         variant="ghost"
         size="icon"
         onClick={toggleSidebar}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
         title="Open Sidebar"
-        className="relative h-9 w-9 p-1 rounded-lg hover:bg-accent flex items-center justify-center shrink-0 transition-colors cursor-pointer"
+        className="relative h-7 w-7 p-1 rounded-md hover:bg-accent flex items-center justify-center shrink-0 transition-colors cursor-pointer group"
       >
-        {isHovered ? (
-          <RiSideBarLine className="h-5 w-5 text-muted-foreground transition-opacity duration-200" />
-        ) : (
-          <LogoIcon className="h-6 w-6 text-emerald-500 transition-opacity duration-200" />
-        )}
+        <LogoIcon className="h-5 w-5 text-emerald-500 transition-opacity duration-200 group-hover:opacity-0" />
+        <RiSideBarLine className="absolute h-4 w-4 text-muted-foreground opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
         <span className="sr-only">Open Sidebar</span>
       </Button>
     );
   }
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={onNewConversation}
-      title="New Conversation"
-      className="h-9 w-9 p-1 rounded-lg hover:bg-accent flex items-center justify-center shrink-0 transition-colors cursor-pointer"
-    >
-      <LogoIcon className="h-6 w-6 text-emerald-500" />
-      <span className="sr-only">New Conversation</span>
-    </Button>
+    <span className="font-semibold text-[14px] tracking-tight px-1 select-none">FeastedChat</span>
   );
 }
 
@@ -109,26 +94,26 @@ export function AppSidebar({
 
   return (
     <Sidebar collapsible="icon" className={cn('border-r bg-sidebar', className)}>
-      <SidebarHeader className="p-3 border-b border-border/60 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:items-center">
-        <div className="flex items-center justify-between w-full group-data-[collapsible=icon]:justify-center">
-          <SidebarLogoButton onNewConversation={onNewConversation} />
-          <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:text-foreground group-data-[collapsible=icon]:hidden" />
+      <SidebarHeader className="p-2 border-b border-border/60 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:items-center gap-2">
+        <div className="flex items-center justify-between w-full group-data-[collapsible=icon]:justify-center h-7">
+          <SidebarLogoButton />
+          <SidebarTrigger className="h-7 w-7 text-muted-foreground hover:text-foreground group-data-[collapsible=icon]:hidden [&_svg]:size-4" />
         </div>
         <Button
           onClick={onNewConversation}
-          className="w-full justify-start gap-2.5 h-10 text-sm font-bold rounded-xl shadow-xs group-data-[collapsible=icon]:h-9 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:rounded-lg"
-          variant="default"
+          className="w-full justify-start gap-2 h-8 text-[13px] font-medium rounded-lg shadow-none group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:rounded-lg"
+          variant="ghost"
           title="New Conversation"
         >
-          <Plus className="h-4.5 w-4.5 shrink-0" />
-          <span className="group-data-[collapsible=icon]:hidden">New Conversation</span>
+          <Plus className="h-4 w-4 shrink-0" />
+          <span className="group-data-[collapsible=icon]:hidden">New chat</span>
         </Button>
       </SidebarHeader>
 
       <SidebarContent className="p-2 group-data-[collapsible=icon]:hidden">
         {grouped.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80 px-2 py-2.5">
+            <SidebarGroupLabel className="text-[11px] font-semibold tracking-widest uppercase text-muted-foreground/60 px-2 py-1">
               {group.label}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -140,11 +125,11 @@ export function AppSidebar({
                       <SidebarMenuButton
                         isActive={isActive}
                         onClick={() => onSelectConversation(conv.id)}
-                        className={`gap-2.5 rounded-xl px-2.5 py-2 ${
-                          isActive ? 'bg-accent text-accent-foreground border border-border/80' : ''
+                        className={`gap-2 rounded-lg px-2 py-1.5 text-[13px] ${
+                          isActive ? 'bg-accent text-accent-foreground' : ''
                         }`}
                       >
-                        <span className="font-medium text-sm truncate">
+                        <span className="font-normal text-[13px] truncate">
                           {conv.title || 'Untitled Conversation'}
                         </span>
                       </SidebarMenuButton>
@@ -154,9 +139,9 @@ export function AppSidebar({
                           e.stopPropagation();
                           onDeleteConversation(conv.id);
                         }}
-                        className="text-muted-foreground hover:text-destructive h-8 w-8 rounded-lg"
+                        className="text-muted-foreground hover:text-destructive h-7 w-7 rounded-md [&_svg]:size-3.5"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" />
                         <span className="sr-only">Delete</span>
                       </SidebarMenuAction>
                     </SidebarMenuItem>
@@ -168,7 +153,7 @@ export function AppSidebar({
         ))}
 
         {grouped.length === 0 && (
-          <div className="p-6 text-center text-base font-medium text-muted-foreground">
+          <div className="p-4 text-center text-[13px] font-normal text-muted-foreground">
             No conversations yet
           </div>
         )}

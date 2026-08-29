@@ -185,10 +185,10 @@ export function ChatView({ initialConversationId }: ChatViewProps) {
       />
 
       <SidebarInset className="flex flex-col h-full overflow-hidden">
-        <div className="flex items-center justify-between px-4 sm:px-6 pt-3 pb-2 bg-transparent gap-4 shrink-0 overflow-x-auto no-scrollbar">
-          <div className="flex items-center gap-3 shrink min-w-0">
+        <div className="flex items-center justify-between px-3 py-2 bg-transparent gap-2 shrink-0 overflow-x-auto no-scrollbar h-12">
+          <div className="flex items-center gap-2 shrink min-w-0">
             {activeConvTitle && (
-              <span className="text-sm font-semibold text-foreground truncate max-w-[200px] sm:max-w-[300px] hidden sm:inline-block">
+              <span className="text-[13px] font-semibold text-foreground truncate max-w-[200px] sm:max-w-[300px] hidden sm:inline-block">
                 {activeConvTitle}
               </span>
             )}
@@ -201,7 +201,7 @@ export function ChatView({ initialConversationId }: ChatViewProps) {
               />
             )}
           </div>
-          <div className="flex items-center gap-2 shrink-0 ml-auto">
+          <div className="flex items-center gap-1.5 shrink-0 ml-auto">
             <ModelFilter
               availableModelIds={participatingModelIds}
               selectedModelId={modelFilter}
@@ -229,9 +229,9 @@ export function ChatView({ initialConversationId }: ChatViewProps) {
               </div>
             </div>
           ) : (
-            <div className="p-4 h-full">
+            <div className="p-3 h-full">
               <div
-                className="grid gap-4 h-full"
+                className="grid gap-3 h-full"
                 style={{
                   gridTemplateColumns: `repeat(${Math.min(displayModelIds.length, 5)}, minmax(0, 1fr))`,
                 }}
