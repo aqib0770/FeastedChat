@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, IBM_Plex_Sans, Roboto_Slab, Instrument_Sans } from 'next/font/google';
+import { Geist, Geist_Mono, Inter, Roboto_Slab, Instrument_Sans } from 'next/font/google';
 import { ThemeProvider } from 'next-themes';
 import './globals.css';
 import { cn } from '@/lib/utils';
@@ -9,7 +9,7 @@ const robotoSlab = Roboto_Slab({ subsets: ['latin'], variable: '--font-serif' })
 
 const instrumentSansHeading = Instrument_Sans({ subsets: ['latin'], variable: '--font-heading' });
 
-const ibmPlexSans = IBM_Plex_Sans({ subsets: ['latin'], variable: '--font-sans' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -41,7 +41,7 @@ export default function RootLayout({
         geistSans.variable,
         geistMono.variable,
         robotoSlab.variable,
-        ibmPlexSans.variable,
+        inter.variable,
         instrumentSansHeading.variable
       )}
     >
