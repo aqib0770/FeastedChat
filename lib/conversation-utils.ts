@@ -41,6 +41,21 @@ export interface ConversationDetail {
 
 export type PanelViewMode = 'full' | 'snapshot';
 
+export interface SearchMatch {
+  kind: 'user' | 'assistant' | 'title';
+  turnIndex: number | null;
+  modelId?: string;
+  snippet: string;
+}
+
+export interface SearchResult {
+  id: string;
+  title: string;
+  updatedAt: string;
+  createdAt: string;
+  matches: SearchMatch[];
+}
+
 export function truncateTitle(content: string, max = 48): string {
   const trimmed = content.trim().replace(/\s+/g, ' ');
   if (trimmed.length <= max) return trimmed;
