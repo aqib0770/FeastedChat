@@ -17,6 +17,7 @@ import { useDocuments } from '@/hooks/use-documents';
 import { getModelById } from '@/lib/models';
 import type { ChatPanelRef } from '@/types';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import { SearchDialog } from '@/components/search-dialog';
 
 interface ChatViewProps {
   initialConversationId?: string | null;
@@ -57,6 +58,7 @@ export function ChatView({ initialConversationId }: ChatViewProps) {
 
   const [streamingState, setStreamingState] = useState(false);
   const [useMemory, setUseMemory] = useState(true);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const activeConvId = activeConversationId ?? conversationId;
   const { documents, isUploading, uploadDocument, deleteDocument } = useDocuments(activeConvId);
@@ -120,17 +122,41 @@ export function ChatView({ initialConversationId }: ChatViewProps) {
   );
 
   const handleSelectConversation = useCallback(
-    async (id: string) => {
+    async (id: string, turnIndex?: number | null) => {
       try {
         const detail = await loadConversation(id);
         hydrateConversation(detail);
         window.history.pushState({}, '', `/c/${id}`);
+        if (turnIndex != null) {
+          // hydrateConversation resets focusedTurnIndex to null, so queue focus for next tick
+          setTimeout(() => focusTurn(turnIndex), 0);
+        }
       } catch (err) {
         console.error('Failed to load conversation:', err);
       }
     },
-    [loadConversation, hydrateConversation]
+    [loadConversation, hydrateConversation, focusTurn]
   );
+
+  const handleSearchSelect = useCallback(
+    (conversationId: string, turnIndex: number | null) => {
+      setSearchOpen(false);
+      handleSelectConversation(conversationId, turnIndex);
+    },
+    [handleSelectConversation]
+  );
+
+  // Global Ctrl/Cmd+K shortcut for search (ChatGPT-style)
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setSearchOpen((v) => !v);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   const handleNewConversation = useCallback(() => {
     startNewConversation();
@@ -179,10 +205,12 @@ export function ChatView({ initialConversationId }: ChatViewProps) {
       <AppSidebar
         conversations={conversations}
         activeConversationId={activeConversationId ?? conversationId}
-        onSelectConversation={handleSelectConversation}
+        onSelectConversation={(id) => handleSelectConversation(id)}
         onNewConversation={handleNewConversation}
         onDeleteConversation={handleDeleteConversation}
+        onSearchClick={() => setSearchOpen(true)}
       />
+      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} onSelect={handleSearchSelect} />
 
       <SidebarInset className="flex flex-col h-full overflow-hidden">
         <div className="flex items-center justify-between px-3 py-2 bg-transparent gap-2 shrink-0 overflow-x-auto no-scrollbar h-12">
