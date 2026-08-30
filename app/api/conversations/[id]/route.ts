@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireSessionKey, assertConversationAccess } from '@/lib/session';
 import { getDb, COLLECTIONS } from '@/lib/db';
 import { ObjectId } from 'mongodb';
+import { validateActiveModelIds } from '@/lib/models';
 
 interface FormattedTurnResponse {
   id: string;
@@ -105,7 +106,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     };
 
     if (body.title !== undefined) updateFields.title = body.title;
-    if (body.activeModelIds !== undefined) updateFields.activeModelIds = body.activeModelIds;
+    if (body.activeModelIds !== undefined) {
+      const validation = validateActiveModelIds(body.activeModelIds);
+      if (!validation.ok) {
+        return NextResponse.json({ error: validation.error }, { status: 400 });
+      }
+      updateFields.activeModelIds = validation.value;
+    }
 
     const db = await getDb();
     await db
