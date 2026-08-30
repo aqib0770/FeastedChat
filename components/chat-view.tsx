@@ -193,7 +193,7 @@ export function ChatView({ initialConversationId }: ChatViewProps) {
 
   const panelKeyPrefix = conversationId ?? 'new';
 
-  const displayModelIds = modelFilter ? [modelFilter] : selectedModelIds;
+  const displayModelIds = modelFilter && modelFilter.length > 0 ? modelFilter : selectedModelIds;
 
   return (
     <SidebarProvider defaultOpen={true} className="h-svh overflow-hidden">
@@ -222,8 +222,8 @@ export function ChatView({ initialConversationId }: ChatViewProps) {
           <div className="flex items-center gap-1.5 shrink-0 ml-auto">
             <ModelFilter
               availableModelIds={participatingModelIds}
-              selectedModelId={modelFilter}
-              onSelectModel={setModelFilter}
+              selectedModelIds={modelFilter}
+              onSelectModels={setModelFilter}
             />
             {turns.length > 0 && <ModeToggle mode={viewMode} onModeChange={setViewMode} />}
             <ThemeToggle />
@@ -264,7 +264,8 @@ export function ChatView({ initialConversationId }: ChatViewProps) {
                       ref={refCallbacks.get(modelId)}
                       modelConfig={config}
                       onRemove={
-                        !modelFilter && selectedModelIds.includes(modelId)
+                        (modelFilter === null || modelFilter.length === 0) &&
+                        selectedModelIds.includes(modelId)
                           ? () => toggleModel(modelId)
                           : undefined
                       }
