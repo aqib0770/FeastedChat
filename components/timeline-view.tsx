@@ -12,11 +12,12 @@ import { User, Bot, Copy, Check } from 'lucide-react';
 
 interface TimelineViewProps {
   turns: StoredTurn[];
-  modelFilter: string | null;
+  modelFilter: string[] | null;
   focusedTurnIndex?: number | null;
 }
 
 export function TimelineView({ turns, modelFilter, focusedTurnIndex = null }: TimelineViewProps) {
+  const filterSet = modelFilter ? new Set(modelFilter) : null;
   const [copiedResponseId, setCopiedResponseId] = useState<string | null>(null);
 
   const handleCopy = (responseId: string, content: string) => {
@@ -58,7 +59,7 @@ export function TimelineView({ turns, modelFilter, focusedTurnIndex = null }: Ti
           {}
           <div className="space-y-3">
             {turn.responses.map((response) => {
-              if (modelFilter && response.modelId !== modelFilter) return null;
+              if (filterSet && !filterSet.has(response.modelId)) return null;
 
               const modelInfo = getModelById(response.modelId);
 
@@ -129,7 +130,7 @@ export function TimelineView({ turns, modelFilter, focusedTurnIndex = null }: Ti
             })}
 
             {}
-            {modelFilter && !turn.responses.some((r) => r.modelId === modelFilter) && (
+            {filterSet && !turn.responses.some((r) => filterSet.has(r.modelId)) && (
               <div className="flex justify-start">
                 <Card className="p-3 bg-muted/30 border-dashed text-muted-foreground text-xs flex items-center gap-2">
                   <Bot className="h-3.5 w-3.5 opacity-50" />
