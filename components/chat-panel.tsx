@@ -213,9 +213,9 @@ export const ChatPanel = forwardRef<ChatPanelRef, ChatPanelProps>(
 
     return (
       <Card className="flex flex-col h-full min-h-0 overflow-hidden border border-border/50 rounded-xl shadow-none bg-card">
-        <CardHeader className="flex-none px-3 py-2.5 border-b border-border/50 space-y-0">
+        <CardHeader className="flex-none px-3 py-1.5 [.border-b]:pb-1.5 border-b border-border/50 space-y-0">
           <TooltipProvider>
-            <div className="flex items-center justify-between h-7">
+            <div className="flex items-center justify-between h-6">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-sm text-foreground tracking-tight">
                   {modelConfig.name}
