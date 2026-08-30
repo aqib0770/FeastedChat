@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ChevronDown, Check, Info } from 'lucide-react';
+import { ChevronDown, Check } from 'lucide-react';
 import { StoredTurn } from '@/lib/conversation-utils';
 import {
   DropdownMenu,
@@ -30,7 +30,6 @@ export function QuestionCards({ turns, focusedTurnIndex, onSelectTurn }: Questio
   return (
     <div className="flex items-center gap-2 shrink-0 flex-wrap">
       <div className="flex items-center gap-1.5">
-        <span className="text-[11px] font-medium text-muted-foreground uppercase">Question</span>
         <DropdownMenu>
           <DropdownMenuTrigger className="inline-flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-background/50 px-3 h-7 text-xs font-medium text-foreground hover:bg-muted/60 transition-colors max-w-[200px]">
             <span className="truncate">{triggerLabel}</span>
@@ -81,15 +80,6 @@ export function QuestionCards({ turns, focusedTurnIndex, onSelectTurn }: Questio
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
-
-      <div className="hidden md:flex items-center gap-1.5 text-[11px] text-muted-foreground/80 font-medium">
-        <Info className="h-3.5 w-3.5 text-muted-foreground" />
-        <span>
-          {isAllFocused
-            ? 'Viewing all questions'
-            : `Question ${focusedTurnIndex + 1} of ${turns.length}`}
-        </span>
       </div>
     </div>
   );
