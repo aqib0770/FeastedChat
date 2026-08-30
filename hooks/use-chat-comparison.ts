@@ -1,7 +1,11 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { DEFAULT_SELECTED_MODEL_IDS, getModelById } from '@/lib/models';
+import {
+  DEFAULT_SELECTED_MODEL_IDS,
+  getModelById,
+  MAX_MODELS_PER_CONVERSATION,
+} from '@/lib/models';
 import type { ChatPanelRef } from '@/types';
 import type {
   ConversationDetail,
@@ -19,7 +23,7 @@ export function useChatComparison(initialConversationId?: string | null) {
   const [viewMode, setViewMode] = useState<'compare' | 'timeline'>('compare');
   const [panelViewMode, setPanelViewMode] = useState<PanelViewMode>('full');
   const [focusedTurnIndex, setFocusedTurnIndex] = useState<number | null>(null);
-  const [modelFilter, setModelFilter] = useState<string | null>(null);
+  const [modelFilter, setModelFilter] = useState<string[] | null>(null);
 
   useEffect(() => {
     if (errorToast) {
@@ -96,9 +100,9 @@ export function useChatComparison(initialConversationId?: string | null) {
           }
           return next;
         }
-        if (prev.length >= 5) {
+        if (prev.length >= MAX_MODELS_PER_CONVERSATION) {
           setErrorToast(
-            'Maximum limit reached: You can compare up to 5 models at a time. Please remove a model before adding a new one.'
+            `Maximum limit reached: You can compare up to ${MAX_MODELS_PER_CONVERSATION} models per conversation.`
           );
           return prev;
         }
