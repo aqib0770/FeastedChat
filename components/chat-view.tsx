@@ -62,11 +62,6 @@ export function ChatView({ initialConversationId }: ChatViewProps) {
 
   const activeConvId = activeConversationId ?? conversationId;
   const { documents, isUploading, uploadDocument, deleteDocument } = useDocuments(activeConvId);
-
-  const activeConv = conversations.find((c) => c.id === activeConvId);
-  const firstUserMsg = turns.length > 0 ? turns[0].userMessage.content : null;
-  const activeConvTitle = activeConv?.title || firstUserMsg;
-
   const handleUpload = useCallback(
     async (file: File) => {
       await uploadDocument(file);
@@ -215,11 +210,6 @@ export function ChatView({ initialConversationId }: ChatViewProps) {
       <SidebarInset className="flex flex-col h-full overflow-hidden">
         <div className="flex items-center justify-between px-3 py-2 bg-transparent gap-2 shrink-0 overflow-x-auto no-scrollbar h-12">
           <div className="flex items-center gap-2 shrink min-w-0">
-            {activeConvTitle && (
-              <span className="text-[13px] font-semibold text-foreground truncate max-w-[200px] sm:max-w-[300px] hidden sm:inline-block">
-                {activeConvTitle}
-              </span>
-            )}
             <Toolbar selectedModelIds={selectedModelIds} onToggleModel={toggleModel} />
             {turns.length > 0 && (
               <QuestionCards
