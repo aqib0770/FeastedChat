@@ -8,6 +8,12 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/ui/accordion';
 import { User, Bot, Copy, Check } from 'lucide-react';
 
 interface TimelineViewProps {
@@ -56,33 +62,39 @@ export function TimelineView({ turns, modelFilter, focusedTurnIndex = null }: Ti
             </div>
           </div>
 
-          {}
-          <div className="space-y-3">
-            {turn.responses.map((response) => {
-              if (filterSet && !filterSet.has(response.modelId)) return null;
-
-              const modelInfo = getModelById(response.modelId);
-
-              return (
-                <div key={response.id} className="flex justify-start">
-                  <div className="max-w-[95%] w-full space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <div className="h-6 w-6 rounded-full bg-muted border flex items-center justify-center text-muted-foreground">
-                        <Bot className="h-3.5 w-3.5" />
-                      </div>
-                      <span className="text-xs font-medium">
-                        {modelInfo?.name || response.modelId}
-                      </span>
-                      <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">
-                        {modelInfo?.provider || 'Unknown'}
-                      </Badge>
-                      {response.status === 'error' && (
-                        <Badge variant="destructive" className="text-[10px] px-1 py-0 h-4">
-                          Error
+          <Accordion multiple className="w-full space-y-2">
+            {turn.responses
+              .filter((r) => !filterSet || filterSet.has(r.modelId))
+              .map((response) => {
+                const modelInfo = getModelById(response.modelId);
+                return (
+                  <AccordionItem
+                    key={response.id}
+                    value={response.id}
+                    className="border rounded-xl bg-card px-3"
+                  >
+                    <AccordionTrigger className="py-3 hover:no-underline">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="h-6 w-6 rounded-full bg-muted border flex items-center justify-center text-muted-foreground shrink-0">
+                          <Bot className="h-3.5 w-3.5" />
+                        </div>
+                        <span className="text-xs font-medium truncate">
+                          {modelInfo?.name || response.modelId}
+                        </span>
+                        <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 shrink-0">
+                          {modelInfo?.provider || 'Unknown'}
                         </Badge>
-                      )}
-                    </div>
-                    <Card className="p-4 rounded-xl rounded-tl-none">
+                        {response.status === 'error' && (
+                          <Badge
+                            variant="destructive"
+                            className="text-[10px] px-1 py-0 h-4 shrink-0"
+                          >
+                            Error
+                          </Badge>
+                        )}
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-3">
                       {response.status === 'error' ? (
                         <div className="text-destructive text-sm">
                           {response.error || 'An error occurred'}
@@ -123,22 +135,20 @@ export function TimelineView({ turns, modelFilter, focusedTurnIndex = null }: Ti
                           </div>
                         </TooltipProvider>
                       )}
-                    </Card>
-                  </div>
-                </div>
-              );
-            })}
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
+          </Accordion>
 
-            {}
-            {filterSet && !turn.responses.some((r) => filterSet.has(r.modelId)) && (
-              <div className="flex justify-start">
-                <Card className="p-3 bg-muted/30 border-dashed text-muted-foreground text-xs flex items-center gap-2">
-                  <Bot className="h-3.5 w-3.5 opacity-50" />
-                  Model was not active for this question
-                </Card>
-              </div>
-            )}
-          </div>
+          {filterSet && !turn.responses.some((r) => filterSet.has(r.modelId)) && (
+            <div className="flex justify-start">
+              <Card className="p-3 bg-muted/30 border-dashed text-muted-foreground text-xs flex items-center gap-2">
+                <Bot className="h-3.5 w-3.5 opacity-50" />
+                Model was not active for this question
+              </Card>
+            </div>
+          )}
         </div>
       ))}
     </div>
