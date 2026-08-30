@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireSessionKey } from '@/lib/session';
 import { getDb, COLLECTIONS } from '@/lib/db';
 import { attachUnassignedDocuments } from '@/lib/rag';
+import { validateActiveModelIds } from '@/lib/models';
 
 export async function GET() {
   try {
@@ -34,9 +35,11 @@ export async function POST(req: Request) {
     const sessionKey = await requireSessionKey();
     const body = await req.json();
 
-    if (!body.activeModelIds || !Array.isArray(body.activeModelIds)) {
-      return NextResponse.json({ error: 'Invalid activeModelIds' }, { status: 400 });
+    const validation = validateActiveModelIds(body.activeModelIds);
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
     }
+    body.activeModelIds = validation.value;
 
     const db = await getDb();
     const now = new Date();
