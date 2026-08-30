@@ -45,7 +45,7 @@ loadEnvFile('.env.local');
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/feastedchat';
 const MAX_CONVERSATIONS = Math.min(50, parseInt(process.env.SEED_CONVERSATIONS || '50', 10) || 50);
 const MIN_TURNS = Math.max(10, parseInt(process.env.SEED_MIN_TURNS || '10', 10) || 10);
-const MAX_MODELS = Math.min(7, Math.max(2, parseInt(process.env.SEED_MAX_MODELS || '7', 10) || 7));
+const MAX_MODELS = Math.min(5, Math.max(2, parseInt(process.env.SEED_MAX_MODELS || '5', 10) || 5));
 const PROVIDED_SESSION_KEY = process.env.SESSION_KEY || null;
 
 const COLLECTIONS = {
