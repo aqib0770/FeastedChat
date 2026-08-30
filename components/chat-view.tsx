@@ -282,20 +282,19 @@ export function ChatView({ initialConversationId }: ChatViewProps) {
           )}
         </div>
 
-        <PromptInput
-          onSend={handleSend}
-          isAnyStreaming={streamingState}
-          disabled={selectedModelIds.length === 0 || viewMode === 'timeline'}
-          disabledPlaceholder={
-            viewMode === 'timeline' ? 'Prompting disabled in timeline view' : undefined
-          }
-          isUploading={isUploading}
-          onUpload={handleUpload}
-          documents={documents}
-          onDeleteDocument={deleteDocument}
-          useMemory={useMemory}
-          onToggleMemory={() => setUseMemory((v) => !v)}
-        />
+        {viewMode !== 'timeline' && (
+          <PromptInput
+            onSend={handleSend}
+            isAnyStreaming={streamingState}
+            disabled={selectedModelIds.length === 0}
+            isUploading={isUploading}
+            onUpload={handleUpload}
+            documents={documents}
+            onDeleteDocument={deleteDocument}
+            useMemory={useMemory}
+            onToggleMemory={() => setUseMemory((v) => !v)}
+          />
+        )}
 
         {errorToast && (
           <div className="fixed bottom-24 right-6 z-50 flex items-center gap-3 bg-destructive text-destructive-foreground px-4 py-3 rounded-lg shadow-lg border animate-in fade-in slide-in-from-bottom-5">
