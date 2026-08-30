@@ -10,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface QuestionCardsProps {
   turns: StoredTurn[];
@@ -37,7 +36,7 @@ export function QuestionCards({ turns, focusedTurnIndex, onSelectTurn }: Questio
             <span className="truncate">{triggerLabel}</span>
             <ChevronDown className="h-3 w-3 shrink-0 text-muted-foreground" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-[320px]">
+          <DropdownMenuContent align="start" className="w-[320px] bg-popover before:hidden">
             <div className="px-2 py-1.5 text-xs font-semibold tracking-wide text-muted-foreground">
               Questions
             </div>
@@ -54,7 +53,7 @@ export function QuestionCards({ turns, focusedTurnIndex, onSelectTurn }: Questio
               <span>All Questions</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <ScrollArea className="max-h-[40vh]">
+            <div className="max-h-[40vh] overflow-y-auto">
               {turns.map((turn) => {
                 const isFocused = focusedTurnIndex === turn.turnIndex;
                 return (
@@ -75,7 +74,7 @@ export function QuestionCards({ turns, focusedTurnIndex, onSelectTurn }: Questio
                   </DropdownMenuItem>
                 );
               })}
-            </ScrollArea>
+            </div>
             <DropdownMenuSeparator />
             <div className="px-2 py-1.5 text-[10px] font-medium text-muted-foreground">
               {turns.length} Question{turns.length === 1 ? '' : 's'}
